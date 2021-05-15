@@ -80,7 +80,7 @@
     .setGraphical(true)
     .setOutput([200, 200]);
 
-    const imageNames = ['Plus', 'Minus', 'Multiply', 'Divide']
+    const imageNames = ['Plus', 'Minus', 'Multiply', 'Divide', 'Happy', 'Sad', 'Orb', 'RedTriangle', 'Cool']
     //var files = fs.readdirSync('/images/'); ??
 
     //========================================================================
@@ -108,10 +108,6 @@
         document.getElementById('IMG-A').appendChild(image1);
         document.getElementById('IMG-B').appendChild(image2);
         document.getElementById('IMG-AB').appendChild(kernel.canvas);
-
-        //document.getElementById('IMG-A2').appendChild(kernel.canvas);
-        // kernel(image1, image3);
-        // document.getElementById('IMG-A2').appendChild(kernel.canvas);
 
         createTableOfImages('ImageChooser', imageNames)
       }
