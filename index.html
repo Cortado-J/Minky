@@ -92,9 +92,8 @@
     image2.src = 'images/Plus.png';
     image2.onload = onload;
 
-    // const image3 = document.createElement('img');
-    // image3.src = 'images/Happy.png';
-    // image3.onload = onload;
+    // Use to cycle between selected images
+    var imageChoice = 0
 
     const totalImages = 2;
     let loadedImages = 0;
@@ -115,6 +114,15 @@
 
     function selectImage(image) {
       console.log(`Clicked image ${image.id}`)
+      const imagePath = 'images/' + image.id + '.png';
+      if (imageChoice == 0) {
+        image1.src = imagePath
+        imageChoice = 1
+      } else {
+        image2.src = imagePath
+        imageChoice = 0
+      }
+      kernel(image1, image2);
     }
 
     function createTableOfImages(insertAtThisId, imageNames){
