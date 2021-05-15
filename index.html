@@ -80,6 +80,8 @@
     .setGraphical(true)
     .setOutput([200, 200]);
 
+    const imageNames = ['Plus', 'Minus', 'Multiply', 'Divide']
+    //var files = fs.readdirSync('/images/'); ??
 
     //========================================================================
     const image1 = document.createElement('img');
@@ -110,8 +112,36 @@
         //document.getElementById('IMG-A2').appendChild(kernel.canvas);
         // kernel(image1, image3);
         // document.getElementById('IMG-A2').appendChild(kernel.canvas);
+
+        createTableOfImages('ImageChooser', imageNames)
       }
     };
+
+    function selectImage(image) {
+      console.log(`Clicked image ${image.id}`)
+    }
+
+    function createTableOfImages(insertAtThisId, imageNames){
+      var tbl  = document.createElement('table');
+      tbl.style.width  = '100px';
+      // tbl.style.border = '1px solid black';
+
+      var tr = tbl.insertRow();
+      for (imageNum in imageNames) {
+        imageName = imageNames[imageNum]
+        var td = tr.insertCell();
+
+        const image = document.createElement('img');
+        image.src = 'images/' + imageName + '.png';
+        image.id = imageName
+        image.onclick = function() { selectImage(this) }
+        td.appendChild(image)
+
+        //td.style.border = '5px solid mediumblue';
+      }
+      document.getElementById(insertAtThisId).appendChild(tbl)
+  }
+
   </script>
 </body>
 
