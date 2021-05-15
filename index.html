@@ -27,6 +27,12 @@
         <h2>Select images:</h2>
       </div>
 
+      <form>
+        <h2>Select combining function:</h2>
+        <input type="radio" name="combine" onchange="changeCombine(1);" value="1" checked="checked"> Maximum
+        <input type="radio" name="combine" onchange="changeCombine(2);" value="2"> Average
+      </form>
+
       <h2>The Minkowski Equation:</h2>
       <table>
         <tr>
@@ -50,7 +56,7 @@
     // This routine will be run for each pixel of the output with:
     //   this.thread.x as the x coordinate of the output
     //   this.thread.y as the y coordinate of the output
-    const kernel = gpu.createKernel(function(imagea, imageb) {
+    const kernel = gpu.createKernel(function(imagea, imageb, combine) {
       const imageawidth  = 100
       const imagebwidth  = 100
       const imageaheight = 100
@@ -68,17 +74,26 @@
         for (let ax = axmin; ax <= axmax; ax++) {
           const pixela = imagea[ay][ax]
           const pixelb = imageb[this.thread.y-ay][this.thread.x-ax]
-          // For each channel, we take the minimum of the two pixel values and then look for the maximum of all of those:
-          maxr = Math.max(maxr, Math.min(pixela[0], pixelb[0]))
-          maxg = Math.max(maxg, Math.min(pixela[1], pixelb[1]))
-          maxb = Math.max(maxb, Math.min(pixela[2], pixelb[2]))
-          maxa = Math.max(maxa, Math.min(pixela[3], pixelb[3]))
+          if (combine == 1) {
+            // For each channel, we take the minimum of the two pixel values and then look for the maximum of all of those:
+            maxr = Math.max(maxr, Math.min(pixela[0], pixelb[0]))
+            maxg = Math.max(maxg, Math.min(pixela[1], pixelb[1]))
+            maxb = Math.max(maxb, Math.min(pixela[2], pixelb[2]))
+            maxa = Math.max(maxa, Math.min(pixela[3], pixelb[3]))
+          }
+          if (combine == 2) {
+            // For each channel take the average of the two pixel values and then look for the maximum of all of those:
+            maxr = Math.max(maxr, (pixela[0] + pixelb[0]) / 2)
+            maxg = Math.max(maxg, (pixela[1] + pixelb[1]) / 2)
+            maxb = Math.max(maxb, (pixela[2] + pixelb[2]) / 2)
+            maxa = Math.max(maxa, (pixela[3] + pixelb[3]) / 2)
+          }
         }
       }
       this.color(maxr, maxg, maxb, maxa)
     })
     .setGraphical(true)
-    .setOutput([200, 200]);
+    .setOutput([200, 200])
 
     const startImage1 = 'Plus'
     const startImage2 = 'Multiply'
@@ -96,15 +111,20 @@
 
     // Use to cycle between selected images
     var imageChoice = 0
+    var combineValue = 1
 
     const totalImages = 2;
     let loadedImages = 0;
+
+    function doMinkowski() {
+      kernel(image1, image2, combineValue);
+    }
 
     //========================================================================
     function onload() {
       loadedImages++;
       if (loadedImages === totalImages) {
-        kernel(image1, image2);
+        doMinkowski()
 
         document.getElementById('IMG-1').appendChild(image1);
         document.getElementById('IMG-2').appendChild(image2);
@@ -124,7 +144,7 @@
         image2.src = imagePath
         imageChoice = 0
       }
-      kernel(image1, image2);
+      doMinkowski()
     }
 
     function createTableOfImages(insertAtThisId, imageNames){
@@ -141,6 +161,12 @@
         td.appendChild(image)
       }
       document.getElementById(insertAtThisId).appendChild(tbl)
+    }
+
+    function changeCombine(newCombineValue) {
+      console.log("Combine value changed to " + newCombineValue)
+      combineValue = newCombineValue
+      doMinkowski()
     }
 
   </script>
