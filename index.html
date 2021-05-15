@@ -7,32 +7,30 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>Testing GPU.JS</title>
+  <title>Minky</title>
 </head>
 
 <body>
   <div class="test">
     <!-- Page Content -->
     <div id="page-content-wrapper" style="margin-bottom: 10px;">
-      Minkowski sum by GPGPU
-      <div id="IMG-A1" >
-        <!-- Image will be here! -->
-      </div>
-      <!-- <table border = "3">
+      <h1>Minkowski sum by GPGPU</h1>
+      <table>
         <tr>
-          <td><div id=“IMG-A1”> IMAGE A1</div></td>
-          <td><div id=“IMG-A2”> IMAGE A2</div></td>
-          <!-- <td><div id=“IMG-A3”></div></td>
-          <td><div id=“IMG-A4”></div></td> -->
-        <!-- </tr>
-      </table> -->
+          <td><div id="IMG-A"></div></td>
+          <td><img src='images/MinkowskiSum.png'></div></td>
+          <td><div id="IMG-B"></div></td>
+          <td><img src='images/EqualsSymbol.png'></div></td>
+          <td><div id="IMG-AB"></div></td>
+        </tr>
+      </table>
     </div>
   </div>
 
          <!-- JavaScript -->
   <script src="dist/gpu-browser.min.js"></script>
   <script>
-    const gpu = new GPU({ mode: 'cpu' });
+    const gpu = new GPU({ mode: 'gpu' });
     var imageSize = 100
 
     //========================================================================
@@ -71,11 +69,11 @@
 
     //========================================================================
     const image1 = document.createElement('img');
-    image1.src = 'images/RedTriangle.png';
+    image1.src = 'images/Orb.png';
     image1.onload = onload;
 
     const image2 = document.createElement('img');
-    image2.src = 'images/Orb.png';
+    image2.src = 'images/Plus.png';
     image2.onload = onload;
 
     // const image3 = document.createElement('img');
@@ -90,7 +88,11 @@
       loadedImages++;
       if (loadedImages === totalImages) {
         kernel(image1, image2);
-        document.getElementById('IMG-A1').appendChild(kernel.canvas);
+
+        document.getElementById('IMG-A').appendChild(image1);
+        document.getElementById('IMG-B').appendChild(image2);
+        document.getElementById('IMG-AB').appendChild(kernel.canvas);
+
         //document.getElementById('IMG-A2').appendChild(kernel.canvas);
         // kernel(image1, image3);
         // document.getElementById('IMG-A2').appendChild(kernel.canvas);
