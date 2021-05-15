@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Testing GPU.JS</title>
+</head>
+
+<body>
+  <div class="test">
+    <!-- Page Content -->
+    <div id="page-content-wrapper" style="margin-bottom: 10px;">
+      Minkowski sum by GPGPU
+      <div id="IMG-A1" >
+        <!-- Image will be here! -->
+      </div>
+      <!-- <table border = "3">
+        <tr>
+          <td><div id=“IMG-A1”> IMAGE A1</div></td>
+          <td><div id=“IMG-A2”> IMAGE A2</div></td>
+          <!-- <td><div id=“IMG-A3”></div></td>
+          <td><div id=“IMG-A4”></div></td> -->
+        <!-- </tr>
+      </table> -->
+    </div>
+  </div>
+
+         <!-- JavaScript -->
+  <script src="dist/gpu-browser.min.js"></script>
+  <script>
+    const gpu = new GPU({ mode: 'cpu' });
+    var imageSize = 100
+
+    //========================================================================
+    // This routine will be run for each pixel of the output with:
+    //   this.thread.x as the x coordinate of the output
+    //   this.thread.y as the y coordinate of the output
+    const kernel = gpu.createKernel(function(imagea, imageb) {
+      const imageawidth  = 100
+      const imagebwidth  = 100
+      const imageaheight = 100
+      const imagebheight = 100
+      const imageoutwidth   = imageawidth  + imagebwidth  - 1
+      const imageoutheight  = imageaheight + imagebheight - 1
+
+      const axmin = Math.max(0, this.thread.x - imagebwidth + 1)
+      const axmax = Math.min(this.thread.x, imageawidth - 1)
+      const aymin = Math.max(0, this.thread.y - imagebheight + 1)
+      const aymax = Math.min(this.thread.y, imageaheight - 1)
+
+      var maxr = 0; var maxg = 0; var maxb = 0; var maxa = 0
+      for (let ay = aymin; ay <= aymax; ay++) {
+        for (let ax = axmin; ax <= axmax; ax++) {
+          const pixela = imagea[ay][ax]
+          const pixelb = imageb[this.thread.y-ay][this.thread.x-ax]
+          // For each channel, we take the minimum of the two pixel values and then look for the maximum of all of those:
+          maxr = Math.max(maxr, Math.min(pixela[0], pixelb[0]))
+          maxg = Math.max(maxg, Math.min(pixela[1], pixelb[1]))
+          maxb = Math.max(maxb, Math.min(pixela[2], pixelb[2]))
+          maxa = Math.max(maxa, Math.min(pixela[3], pixelb[3]))
+        }
+      }
+      this.color(maxr, maxg, maxb, maxa)
+    })
+    .setGraphical(true)
+    .setOutput([200, 200]);
+
+    //========================================================================
+    const image1 = document.createElement('img');
+    image1.src = 'images/RedTriangle.png';
+    image1.onload = onload;
+
+    const image2 = document.createElement('img');
+    image2.src = 'images/Orb.png';
+    image2.onload = onload;
+
+    // const image3 = document.createElement('img');
+    // image3.src = 'images/Happy.png';
+    // image3.onload = onload;
+
+    const totalImages = 2;
+    let loadedImages = 0;
+
+    //========================================================================
+    function onload() {
+      loadedImages++;
+      if (loadedImages === totalImages) {
+        kernel(image1, image2);
+        document.getElementById('IMG-A1').appendChild(kernel.canvas);
+        //document.getElementById('IMG-A2').appendChild(kernel.canvas);
+        // kernel(image1, image3);
+        // document.getElementById('IMG-A2').appendChild(kernel.canvas);
+      }
+    };
+  </script>
+</body>
+
+</html>
