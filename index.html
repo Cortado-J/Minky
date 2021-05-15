@@ -30,11 +30,11 @@
       <h2>The Minkowski Equation:</h2>
       <table>
         <tr>
-          <td><div id="IMG-A"></div></td>
+          <td><div id="IMG-1"></div></td>
           <td><img src='images/MinkowskiSum.png'></div></td>
-          <td><div id="IMG-B"></div></td>
+          <td><div id="IMG-2"></div></td>
           <td><img src='images/EqualsSymbol.png'></div></td>
-          <td><div id="IMG-AB"></div></td>
+          <td><div id="IMG-SUM"></div></td>
         </tr>
       </table>
     </div>
@@ -80,16 +80,18 @@
     .setGraphical(true)
     .setOutput([200, 200]);
 
+    const startImage1 = 'Plus'
+    const startImage2 = 'Multiply'
     const imageNames = ['Plus', 'Minus', 'Multiply', 'Divide', 'Happy', 'Sad', 'Orb', 'RedTriangle', 'Cool']
     //var files = fs.readdirSync('/images/'); ??
 
     //========================================================================
     const image1 = document.createElement('img');
-    image1.src = 'images/Orb.png';
+    image1.src = 'images/' + startImage1 + '.png';
     image1.onload = onload;
 
     const image2 = document.createElement('img');
-    image2.src = 'images/Plus.png';
+    image2.src = 'images/' + startImage2 + '.png';
     image2.onload = onload;
 
     // Use to cycle between selected images
@@ -104,9 +106,9 @@
       if (loadedImages === totalImages) {
         kernel(image1, image2);
 
-        document.getElementById('IMG-A').appendChild(image1);
-        document.getElementById('IMG-B').appendChild(image2);
-        document.getElementById('IMG-AB').appendChild(kernel.canvas);
+        document.getElementById('IMG-1').appendChild(image1);
+        document.getElementById('IMG-2').appendChild(image2);
+        document.getElementById('IMG-SUM').appendChild(kernel.canvas);
 
         createTableOfImages('ImageChooser', imageNames)
       }
@@ -127,9 +129,6 @@
 
     function createTableOfImages(insertAtThisId, imageNames){
       var tbl  = document.createElement('table');
-      tbl.style.width  = '100px';
-      // tbl.style.border = '1px solid black';
-
       var tr = tbl.insertRow();
       for (imageNum in imageNames) {
         imageName = imageNames[imageNum]
@@ -140,8 +139,6 @@
         image.id = imageName
         image.onclick = function() { selectImage(this) }
         td.appendChild(image)
-
-        //td.style.border = '5px solid mediumblue';
       }
       document.getElementById(insertAtThisId).appendChild(tbl)
     }
