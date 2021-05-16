@@ -35,12 +35,11 @@
         <input type="radio" name="rangeFunction" onchange="changeRangeFn(3);" value="3"> Multiply
       </form>
 
-      <!-- <form>
-        <h2>Select condensing function:</h2>
-        <input type="radio" name="combine" onchange="changeCombine(1);" value="1" checked="checked"> Minimum
-        <input type="radio" name="combine" onchange="changeCombine(2);" value="2"> Average
-        <input type="radio" name="combine" onchange="changeCombine(3);" value="3"> Multiply
-      </form> -->
+      <form>
+        <h2>Select 'Condensing Function':</h2>
+        <input type="radio" name="condensingFunction" onchange="changeCondensingFn(1);" value="1" checked="checked"> Maximum
+        <input type="radio" name="condensingFunction" onchange="changeCondensingFn(2);" value="2"> Average
+      </form>
 
       <h2>The Minkowski Equation:</h2>
       <table>
@@ -65,7 +64,7 @@
     // This routine will be run for each pixel of the output with:
     //   this.thread.x as the x coordinate of the output
     //   this.thread.y as the y coordinate of the output
-    const kernel = gpu.createKernel(function(imagea, imageb, rangeFunction) {
+    const kernel = gpu.createKernel(function(imagea, imageb, rangeFunction, condensingFunction) {
       const imageawidth  = 100
       const imagebwidth  = 100
       const imageaheight = 100
@@ -78,7 +77,7 @@
       const aymin = Math.max(0, this.thread.y - imagebheight + 1)
       const aymax = Math.min(this.thread.y, imageaheight - 1)
 
-      var maxr = 0; var maxg = 0; var maxb = 0; var maxa = 0
+      var maxr = 0; var maxg = 0; var maxb = 0; var maxa = 0; var loopCount = 0
       for (let ay = aymin; ay <= aymax; ay++) {
         for (let ax = axmin; ax <= axmax; ax++) {
           const pixela = imagea[ay][ax]
@@ -86,27 +85,62 @@
 
           //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
           // The following may not be succinct but it happens O(n^4) times so trying to keep efficient!
-          if (rangeFunction == 1) {
-            // For each channel, we take the minimum of the two pixel values and then look for the maximum of all of those:
-            maxr = Math.max(maxr, Math.min(pixela[0], pixelb[0]))
-            maxg = Math.max(maxg, Math.min(pixela[1], pixelb[1]))
-            maxb = Math.max(maxb, Math.min(pixela[2], pixelb[2]))
-            maxa = Math.max(maxa, Math.min(pixela[3], pixelb[3]))
+          if (condensingFunction == 1) { // Maximum
+            if (rangeFunction == 1) {
+              // For each channel, we take the minimum of the two pixel values and then look for the maximum of all of those:
+              maxr = Math.max(maxr, Math.min(pixela[0], pixelb[0]))
+              maxg = Math.max(maxg, Math.min(pixela[1], pixelb[1]))
+              maxb = Math.max(maxb, Math.min(pixela[2], pixelb[2]))
+              maxa = Math.max(maxa, Math.min(pixela[3], pixelb[3]))
+            }
+            if (rangeFunction == 2) {
+              // For each channel take the average of the two pixel values and then look for the maximum of all of those:
+              maxr = Math.max(maxr, (pixela[0] + pixelb[0]) / 2)
+              maxg = Math.max(maxg, (pixela[1] + pixelb[1]) / 2)
+              maxb = Math.max(maxb, (pixela[2] + pixelb[2]) / 2)
+              maxa = Math.max(maxa, (pixela[3] + pixelb[3]) / 2)
+            }
+            if (rangeFunction == 3) {
+              maxr = Math.max(maxr, pixela[0] * pixelb[0])
+              maxg = Math.max(maxg, pixela[1] * pixelb[1])
+              maxb = Math.max(maxb, pixela[2] * pixelb[2])
+              maxa = Math.max(maxa, pixela[3] * pixelb[3])
+            }
           }
-          if (rangeFunction == 2) {
-            // For each channel take the average of the two pixel values and then look for the maximum of all of those:
-            maxr = Math.max(maxr, (pixela[0] + pixelb[0]) / 2)
-            maxg = Math.max(maxg, (pixela[1] + pixelb[1]) / 2)
-            maxb = Math.max(maxb, (pixela[2] + pixelb[2]) / 2)
-            maxa = Math.max(maxa, (pixela[3] + pixelb[3]) / 2)
-          }
-          if (rangeFunction == 3) {
-            maxr = Math.max(maxr, pixela[0] * pixelb[0])
-            maxg = Math.max(maxg, pixela[1] * pixelb[1])
-            maxb = Math.max(maxb, pixela[2] * pixelb[2])
-            maxa = Math.max(maxa, pixela[3] * pixelb[3])
+          if (condensingFunction == 2) { // Average
+            if (rangeFunction == 1) {
+              // For each channel, we take the minimum of the two pixel values and then look for the maximum of all of those:
+              maxr = maxr + Math.min(pixela[0], pixelb[0])
+              maxg = maxg + Math.min(pixela[1], pixelb[1])
+              maxb = maxb + Math.min(pixela[2], pixelb[2])
+              maxa = maxa + Math.min(pixela[3], pixelb[3])
+            }
+            if (rangeFunction == 2) {
+              // For each channel take the average of the two pixel values and then look for the maximum of all of those:
+              maxr = maxr + (pixela[0] + pixelb[0]) / 2
+              maxg = maxg + (pixela[1] + pixelb[1]) / 2
+              maxb = maxb + (pixela[2] + pixelb[2]) / 2
+              maxa = maxa + (pixela[3] + pixelb[3]) / 2
+            }
+            if (rangeFunction == 3) {
+              maxr = maxr + pixela[0] * pixelb[0]
+              maxg = maxg + pixela[1] * pixelb[1]
+              maxb = maxb + pixela[2] * pixelb[2]
+              maxa = maxa + pixela[3] * pixelb[3]
+            }
+            if (maxr+maxg+maxb+maxa > 0) {
+              loopCount = loopCount + 1
+            }
           }
           //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        }
+      }
+      if (condensingFunction == 2) { // Average
+        if (loopCount > 0) {
+          maxr = maxr / loopCount
+          maxg = maxg / loopCount
+          maxb = maxb / loopCount
+          maxa = maxa / loopCount
         }
       }
       this.color(maxr, maxg, maxb, maxa)
@@ -116,7 +150,7 @@
 
     //========================================================================
     function doMinkowski() {
-      kernel(image1, image2, combineValue);
+      kernel(image1, image2, rangeFunctionValue, condensingFunctionValue);
     }
 
     //========================================================================
@@ -139,8 +173,10 @@
 
     // Use to cycle between selected images
     var imageChoice = 0
-    // Use to select range function
+
+    // Use to select functions
     var rangeFunctionValue = 1
+    var condensingFunctionValue = 1
 
     const totalImages = 2;
     let loadedImages = 0;
@@ -189,9 +225,15 @@
       doMinkowski()
     }
 
-    function changerangeFunction(newRangeFunctionValue) {
+    function changeRangeFn(newRangeFunctionValue) {
       console.log("Range Function value changed to " + newRangeFunctionValue)
       rangeFunctionValue = newRangeFunctionValue
+      doMinkowski()
+    }
+
+    function changeCondensingFn(newCondensingFunctionValue) {
+      console.log("Condensing Function value changed to " + newCondensingFunctionValue)
+      condensingFunctionValue = newCondensingFunctionValue
       doMinkowski()
     }
 
