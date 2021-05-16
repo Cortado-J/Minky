@@ -9,8 +9,10 @@
 
   <style>
     body { background-color: linen }
-    h1 { color: maroon }
-    h2 { color: maroon }
+    h1 { color: maroon; margin-bottom: 0px }
+    h2 { color: maroon; margin-bottom: 0px }
+    h3 { color: maroon; margin-bottom: 0px }
+    p  { margin-top: 0px; margin-bottom: 0px }
   </style>
 
   <title>Minky</title>
@@ -23,25 +25,36 @@
       <h1>Minky: Minkowski sums of images</h1>
 
       <!-- Image Chooser for selecteding which images to add: -->
-      <div id="ImageChooser">
+      <div id="TAG-ImageChooser">
         <h2>Select images:</h2>
         <!-- Choice of images will go here -->
       </div>
 
-      <form>
-        <h2>Select 'Range Function':</h2>
-        <input type="radio" name="rangeFunction" onchange="changeRangeFn(1);" value="1" checked="checked"> Minimum
-        <input type="radio" name="rangeFunction" onchange="changeRangeFn(2);" value="2"> Average
-        <input type="radio" name="rangeFunction" onchange="changeRangeFn(3);" value="3"> Multiply
-      </form>
+      <table>
+        <tr>
+          <td VALIGN=TOP>
+            <form>
+              <h3>Select 'Range Function'</h2>
+              <div><input type="radio" name="rangeFunction" onchange="changeRangeFn(1);" value="1" checked="checked"> Minimum</div>
+              <div><input type="radio" name="rangeFunction" onchange="changeRangeFn(2);" value="2"> Average</div>
+              <div><input type="radio" name="rangeFunction" onchange="changeRangeFn(3);" value="3"> Multiply</div>
+            </form>
+          </td>
 
-      <form>
-        <h2>Select 'Condensing Function':</h2>
-        <input type="radio" name="condensingFunction" onchange="changeCondensingFn(1);" value="1" checked="checked"> Maximum
-        <input type="radio" name="condensingFunction" onchange="changeCondensingFn(2);" value="2"> Average
-      </form>
+          <td VALIGN=TOP>
+          </td>
 
-      <h2>The Minkowski Equation:</h2>
+          <td VALIGN=TOP>
+            <form>
+              <h3>Select 'Condensing Function'</h2>
+              <div><input type="radio" name="condensingFunction" onchange="changeCondensingFn(1);" value="1" checked="checked"> Maximum</div>
+              <div><input type="radio" name="condensingFunction" onchange="changeCondensingFn(2);" value="2"> Average</div>
+            </form>
+          </td>
+        </tr>
+      </table>
+
+      <h2>Minkowski Equation:</h2>
       <table>
         <tr>
           <td><div id="IMG-1"></div></td>
@@ -51,6 +64,10 @@
           <td><div id="IMG-SUM"></div></td>
         </tr>
       </table>
+
+      <h2>Minkowski Table:</h2>
+      <div id="TAG-OperationTable"></div>
+
     </div>
   </div>
 
@@ -159,7 +176,9 @@
     const defaultImage1 = 'Plus'
     const defaultImage2 = 'Multiply'
 
-    createTableOfImages('ImageChooser', imageNames)
+    createRowOfImages('TAG-ImageChooser', imageNames)
+
+    createOperationTable('TAG-OperationTable', ['Plus', 'Minus', 'Multiply', 'Divide'])
 
     const image1 = loadImage(defaultImage1)
     image1.onload = onload
@@ -197,7 +216,7 @@
       return image
     }
 
-    function createTableOfImages(insertAtThisId, imageNames){
+    function createRowOfImages(insertAtThisId, imageNames){
       var tbl  = document.createElement('table');
       var tr = tbl.insertRow();
       for (imageNum in imageNames) {
@@ -208,6 +227,34 @@
         image.id = imageName
         image.onclick = function() { selectImage(this) }
         td.appendChild(image)
+      }
+      document.getElementById(insertAtThisId).appendChild(tbl)
+    }
+
+    function createOperationTable(insertAtThisId, imageNames){
+      var tbl  = document.createElement('table');
+      var tr = tbl.insertRow();
+      // Header
+      //Top Left Empty Cell
+      tr.insertCell();
+      for (imageNum in imageNames) {
+        imageName = imageNames[imageNum]
+        var td = tr.insertCell();
+        const image = loadImage(imageName)
+        image.id = imageName
+        td.appendChild(image)
+      }
+      // Body
+      for (imageNum in imageNames) {
+        var tr = tbl.insertRow();
+        imageName = imageNames[imageNum]
+        var td = tr.insertCell();
+        const image = loadImage(imageName)
+        image.id = imageName
+        td.appendChild(image)
+        for (emptyNum in imageNames) {
+          tr.insertCell();
+        }
       }
       document.getElementById(insertAtThisId).appendChild(tbl)
     }
