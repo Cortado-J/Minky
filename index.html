@@ -25,6 +25,7 @@
       <!-- Image Chooser for selecteding which images to add: -->
       <div id="ImageChooser">
         <h2>Select images:</h2>
+        <!-- Choice of images will go here -->
       </div>
 
       <form>
@@ -75,6 +76,9 @@
         for (let ax = axmin; ax <= axmax; ax++) {
           const pixela = imagea[ay][ax]
           const pixelb = imageb[this.thread.y-ay][this.thread.x-ax]
+
+          //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          // The following may not be succinct but it happens O(n^4) times so trying to keep efficient!
           if (combine == 1) {
             // For each channel, we take the minimum of the two pixel values and then look for the maximum of all of those:
             maxr = Math.max(maxr, Math.min(pixela[0], pixelb[0]))
@@ -95,6 +99,7 @@
             maxb = Math.max(maxb, pixela[2] * pixelb[2])
             maxa = Math.max(maxa, pixela[3] * pixelb[3])
           }
+          //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         }
       }
       this.color(maxr, maxg, maxb, maxa)
@@ -102,56 +107,49 @@
     .setGraphical(true)
     .setOutput([200, 200])
 
-    const startImage1 = 'Plus'
-    const startImage2 = 'Multiply'
-    const imageNames = ['Plus', 'Minus', 'Multiply', 'Divide', 'Happy', 'Sad', 'Orb', 'RedTriangle', 'Cool']
-    //var files = fs.readdirSync('/images/'); ??
-
     //========================================================================
-    const image1 = document.createElement('img');
-    image1.src = 'images/' + startImage1 + '.png';
-    image1.onload = onload;
-
-    const image2 = document.createElement('img');
-    image2.src = 'images/' + startImage2 + '.png';
-    image2.onload = onload;
-
-    // Use to cycle between selected images
-    var imageChoice = 0
-    var combineValue = 1
-
-    const totalImages = 2;
-    let loadedImages = 0;
-
     function doMinkowski() {
       kernel(image1, image2, combineValue);
     }
 
     //========================================================================
+    const imageNames = ['Plus', 'Minus', 'Multiply', 'Divide', 'Happy', 'Sad', 'Orb', 'RedTriangle', 'Cool']
+    //var files = fs.readdirSync('/images/'); ??
+    const defaultImage1 = 'Plus'
+    const defaultImage2 = 'Multiply'
+
+    createTableOfImages('ImageChooser', imageNames)
+
+    const image1 = loadImage(defaultImage1)
+    const image2 = loadImage(defaultImage2)
+
+    const totalImages = 2;
+    let loadedImages = 0;
+
+    // Set up two equation images and their minkowski sum:
+    document.getElementById('IMG-1').appendChild(image1);
+    document.getElementById('IMG-2').appendChild(image2);
+    document.getElementById('IMG-SUM').appendChild(kernel.canvas);
+
+    // Use to cycle between selected images
+    var imageChoice = 0
+    // Use to select combining function
+    var combineValue = 1
+
     function onload() {
       loadedImages++;
       if (loadedImages === totalImages) {
         doMinkowski()
-
-        document.getElementById('IMG-1').appendChild(image1);
-        document.getElementById('IMG-2').appendChild(image2);
-        document.getElementById('IMG-SUM').appendChild(kernel.canvas);
-
-        createTableOfImages('ImageChooser', imageNames)
       }
     };
+    //========================================================================
+    // Helper functions
 
-    function selectImage(image) {
-      console.log(`Clicked image ${image.id}`)
-      const imagePath = 'images/' + image.id + '.png';
-      if (imageChoice == 0) {
-        image1.src = imagePath
-        imageChoice = 1
-      } else {
-        image2.src = imagePath
-        imageChoice = 0
-      }
-      doMinkowski()
+    function loadImage(imageName) {
+      const image = document.createElement('img')
+      image.src = 'images/' + imageName + '.png'
+      image.onload = onload
+      return image
     }
 
     function createTableOfImages(insertAtThisId, imageNames){
@@ -168,6 +166,19 @@
         td.appendChild(image)
       }
       document.getElementById(insertAtThisId).appendChild(tbl)
+    }
+
+    function selectImage(image) {
+      console.log(`Clicked image ${image.id}`)
+      const imagePath = 'images/' + image.id + '.png';
+      if (imageChoice == 0) {
+        image1.src = imagePath
+        imageChoice = 1
+      } else {
+        image2.src = imagePath
+        imageChoice = 0
+      }
+      doMinkowski()
     }
 
     function changeCombine(newCombineValue) {
