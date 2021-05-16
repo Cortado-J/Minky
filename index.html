@@ -29,11 +29,18 @@
       </div>
 
       <form>
-        <h2>Select combining function:</h2>
+        <h2>Select 'Range Function':</h2>
+        <input type="radio" name="rangeFunction" onchange="changeRangeFn(1);" value="1" checked="checked"> Minimum
+        <input type="radio" name="rangeFunction" onchange="changeRangeFn(2);" value="2"> Average
+        <input type="radio" name="rangeFunction" onchange="changeRangeFn(3);" value="3"> Multiply
+      </form>
+
+      <!-- <form>
+        <h2>Select condensing function:</h2>
         <input type="radio" name="combine" onchange="changeCombine(1);" value="1" checked="checked"> Minimum
         <input type="radio" name="combine" onchange="changeCombine(2);" value="2"> Average
         <input type="radio" name="combine" onchange="changeCombine(3);" value="3"> Multiply
-      </form>
+      </form> -->
 
       <h2>The Minkowski Equation:</h2>
       <table>
@@ -58,7 +65,7 @@
     // This routine will be run for each pixel of the output with:
     //   this.thread.x as the x coordinate of the output
     //   this.thread.y as the y coordinate of the output
-    const kernel = gpu.createKernel(function(imagea, imageb, combine) {
+    const kernel = gpu.createKernel(function(imagea, imageb, rangeFunction) {
       const imageawidth  = 100
       const imagebwidth  = 100
       const imageaheight = 100
@@ -79,21 +86,21 @@
 
           //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
           // The following may not be succinct but it happens O(n^4) times so trying to keep efficient!
-          if (combine == 1) {
+          if (rangeFunction == 1) {
             // For each channel, we take the minimum of the two pixel values and then look for the maximum of all of those:
             maxr = Math.max(maxr, Math.min(pixela[0], pixelb[0]))
             maxg = Math.max(maxg, Math.min(pixela[1], pixelb[1]))
             maxb = Math.max(maxb, Math.min(pixela[2], pixelb[2]))
             maxa = Math.max(maxa, Math.min(pixela[3], pixelb[3]))
           }
-          if (combine == 2) {
+          if (rangeFunction == 2) {
             // For each channel take the average of the two pixel values and then look for the maximum of all of those:
             maxr = Math.max(maxr, (pixela[0] + pixelb[0]) / 2)
             maxg = Math.max(maxg, (pixela[1] + pixelb[1]) / 2)
             maxb = Math.max(maxb, (pixela[2] + pixelb[2]) / 2)
             maxa = Math.max(maxa, (pixela[3] + pixelb[3]) / 2)
           }
-          if (combine == 3) {
+          if (rangeFunction == 3) {
             maxr = Math.max(maxr, pixela[0] * pixelb[0])
             maxg = Math.max(maxg, pixela[1] * pixelb[1])
             maxb = Math.max(maxb, pixela[2] * pixelb[2])
@@ -132,8 +139,8 @@
 
     // Use to cycle between selected images
     var imageChoice = 0
-    // Use to select combining function
-    var combineValue = 1
+    // Use to select range function
+    var rangeFunctionValue = 1
 
     const totalImages = 2;
     let loadedImages = 0;
@@ -182,9 +189,9 @@
       doMinkowski()
     }
 
-    function changeCombine(newCombineValue) {
-      console.log("Combine value changed to " + newCombineValue)
-      combineValue = newCombineValue
+    function changerangeFunction(newRangeFunctionValue) {
+      console.log("Range Function value changed to " + newRangeFunctionValue)
+      rangeFunctionValue = newRangeFunctionValue
       doMinkowski()
     }
 
