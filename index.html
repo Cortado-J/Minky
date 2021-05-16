@@ -123,9 +123,6 @@
     const image1 = loadImage(defaultImage1)
     const image2 = loadImage(defaultImage2)
 
-    const totalImages = 2;
-    let loadedImages = 0;
-
     // Set up two equation images and their minkowski sum:
     document.getElementById('IMG-1').appendChild(image1);
     document.getElementById('IMG-2').appendChild(image2);
@@ -135,6 +132,9 @@
     var imageChoice = 0
     // Use to select combining function
     var combineValue = 1
+
+    const totalImages = 2;
+    let loadedImages = 0;
 
     function onload() {
       loadedImages++;
