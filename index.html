@@ -121,7 +121,9 @@
     createTableOfImages('ImageChooser', imageNames)
 
     const image1 = loadImage(defaultImage1)
+    image1.onload = onload
     const image2 = loadImage(defaultImage2)
+    image2.onload = onload
 
     // Set up two equation images and their minkowski sum:
     document.getElementById('IMG-1').appendChild(image1);
@@ -147,8 +149,8 @@
 
     function loadImage(imageName) {
       const image = document.createElement('img')
+      //image.crossOrigin = ""
       image.src = 'images/' + imageName + '.png'
-      image.onload = onload
       return image
     }
 
@@ -159,8 +161,7 @@
         imageName = imageNames[imageNum]
         var td = tr.insertCell();
 
-        const image = document.createElement('img');
-        image.src = 'images/' + imageName + '.png';
+        const image = loadImage(imageName)
         image.id = imageName
         image.onclick = function() { selectImage(this) }
         td.appendChild(image)
