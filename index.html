@@ -124,16 +124,14 @@
               maxa = Math.max(maxa, pixela[3] * pixelb[3])
             }
           }
-          if (condensingFunction == 2) { // Average
+          if (condensingFunction == 2) { // Average which we achieve by adding and then divide later
             if (rangeFunction == 1) {
-              // For each channel, we take the minimum of the two pixel values and then look for the maximum of all of those:
               maxr = maxr + Math.min(pixela[0], pixelb[0])
               maxg = maxg + Math.min(pixela[1], pixelb[1])
               maxb = maxb + Math.min(pixela[2], pixelb[2])
               maxa = maxa + Math.min(pixela[3], pixelb[3])
             }
             if (rangeFunction == 2) {
-              // For each channel take the average of the two pixel values and then look for the maximum of all of those:
               maxr = maxr + (pixela[0] + pixelb[0]) / 2
               maxg = maxg + (pixela[1] + pixelb[1]) / 2
               maxb = maxb + (pixela[2] + pixelb[2]) / 2
@@ -145,7 +143,7 @@
               maxb = maxb + pixela[2] * pixelb[2]
               maxa = maxa + pixela[3] * pixelb[3]
             }
-            if (maxr+maxg+maxb+maxa > 0) {
+            if (maxr+maxg+maxb+maxa > 0) {  // Only count if there's a non-zero amount
               loopCount = loopCount + 1
             }
           }
