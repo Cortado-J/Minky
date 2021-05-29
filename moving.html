@@ -30,6 +30,7 @@ rotor<!DOCTYPE html>
     <table>
       <tr>
         <td>
+
           <div id="rotorFixed">
             <svg width="100" height="100">
               <path id ="square" fill= "#E00000FF" d="M0 0 H100 V100 H0 Z"/>
@@ -45,6 +46,7 @@ rotor<!DOCTYPE html>
               </g>
             </svg>
           </div>
+
         </td>
         <td><img src='images/MinkowskiSum.png'></td>
         <td>
@@ -58,6 +60,8 @@ rotor<!DOCTYPE html>
           </div>
         </td>
         <td><img src='images/EqualsSymbol.png'></td>
+        <td><div id="minkySum"></div></td>
+
       </tr>
     </table>
 
@@ -202,6 +206,8 @@ rotor<!DOCTYPE html>
       // Keep references
       const elementRotor = document.getElementById("rotor")
       const elementRotorFixed = document.getElementById("rotorFixed")
+      const elementMinkySum = document.getElementById("minkySum")
+
       const elementRotorSnapshots = document.getElementById("rotorSnapshots")
       const elementRotorFixedSnapshots = document.getElementById("rotorFixedSnapshots")
       const elementRotorSum = document.getElementById("rotorSum")
@@ -220,12 +226,14 @@ Power0.easeNone} );
 
         //Fixed
         const canvas = await html2canvas(elementRotorFixed, {scale: "1.0", width: "100", height: "100"})
-        await sleep(100);
+        //await sleep(100);
 
         const fixedImage = canvasImage(canvas)
         console.log("Snapped " + "fixed" + "!");
         replaceChild(elementRotorFixedSnapshots, fixedImage)
         console.log("Showed frame " + "fixed");
+
+        elementMinkySum.appendChild(kernel.canvas);
 
         //Moving
         let images = []
@@ -236,7 +244,7 @@ Power0.easeNone} );
 
           // Turn input into image
           const canvas = await html2canvas(elementRotor, {scale: "1.0", width: "100", height: "100"})
-          await sleep(100);
+          //await sleep(100);
 
           const movingImage = canvasImage(canvas)
           images.push(movingImage)
@@ -244,7 +252,7 @@ Power0.easeNone} );
 
           // Calculate minkowski sum
           kernel(fixedImage, movingImage, 1, 1);
-          await sleep(100);
+          //await sleep(100);
 
           const sumImage = canvasImage(kernel.canvas)
           sumImages.push(sumImage)
