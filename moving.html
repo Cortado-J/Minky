@@ -1,0 +1,272 @@
+rotor<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <style>
+    body { background-color: linen }
+    h1 { color: maroon; margin-bottom: 0px }
+    h2 { color: maroon; margin-bottom: 0px }
+    h3 { color: maroon; margin-bottom: 0px }
+    p  { margin-top: 0px; margin-bottom: 0px }
+    /* #inputs { white-space: nowrap; display: block }
+    #rotorSnapshots { white-space: nowrap; display: block } */
+  </style>
+
+  <title>Moving</title>
+</head>
+
+<body>
+  <div class="test">
+    <h1>Moving</h1>
+    <form action=".\index.html">
+      <input type="submit" value="Home" />
+    </form>
+
+    <table>
+      <tr>
+        <td>
+          <div id="rotorFixed">
+            <svg width="100" height="100">
+              <path id ="square" fill= "#E00000FF" d="M0 0 H100 V100 H0 Z"/>
+              <g id="plus">
+                <!-- PLUS -->
+                <path fill= "#F0F0F0F0" d="M48 10 H52 V48 H90 V52 H52 V90 H48 V52 H10 V48 H48 Z"/>
+                <!-- MINUS -->
+                <!-- <path fill= "#F0F0F0F0" d="M10 48 V52 H90 V48 H10 Z"/> -->
+                <!-- DIVIDE -->
+                <!-- <path fill= "#F0F0F0F0" d="M10 48 V52 H90 V48 H10 Z"/>
+                <circle fill= "#F0F0F0F0" cx="50" cy="12" r="2"/>
+                <circle fill= "#F0F0F0F0" cx="50" cy="88" r="2"/> -->
+              </g>
+            </svg>
+          </div>
+        </td>
+        <td><img src='images/MinkowskiSum.png'></td>
+        <td>
+          <div id="rotor">
+            <svg width="100" height="100">
+              <path id ="square" fill= "#E00000FF" d="M0 0 H100 V100 H0 Z"/>
+              <g id="plus" class="plusrotate">
+                <path fill= "#F0F0F0F0" d="M48 10 H52 V48 H90 V52 H52 V90 H48 V52 H10 V48 H48 Z"/>
+              </g>
+            </svg>
+          </div>
+        </td>
+        <td><img src='images/EqualsSymbol.png'></td>
+      </tr>
+    </table>
+
+    <div>
+      <table>
+        <tr>
+          <td>
+            <div id="rotorFixedSnapshots"></div>
+          </td>
+          <td><img src='images/MinkowskiSum.png'></td>
+          <td>
+            <div id="rotorSnapshots"></div>
+          </td>
+          <td><img src='images/EqualsSymbol.png'></td>
+          <td>
+            <div id="rotorSum"></div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Get external scripts -------------------------------->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.min.js" integrity="sha512-cdV6j5t5o24hkSciVrb8Ki6FveC2SgwGfLE31+ZQRHAeSRxYhAQskLkq3dLm8ZcWe1N3vBOEYmmbhzf7NTtFFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="dist/html2canvas.js"></script>
+    <script src="dist/gpu-browser.min.js"></script>
+
+    <!-- Script ---------------------------------------------->
+    <script>
+      const gpu = new GPU({ mode: 'gpu' });
+      var imageSize = 100
+
+      //========================================================================
+      // This routine will be run for each pixel of the output with:
+      //   this.thread.x as the x coordinate of the output
+      //   this.thread.y as the y coordinate of the output
+      const kernel = gpu.createKernel(function(imagea, imageb, rangeFunction, condensingFunction) {
+        const imageawidth  = 100
+        const imagebwidth  = 100
+        const imageaheight = 100
+        const imagebheight = 100
+        const imageoutwidth   = imageawidth  + imagebwidth  - 1
+        const imageoutheight  = imageaheight + imagebheight - 1
+
+        const axmin = Math.max(0, this.thread.x - imagebwidth + 1)
+        const axmax = Math.min(this.thread.x, imageawidth - 1)
+        const aymin = Math.max(0, this.thread.y - imagebheight + 1)
+        const aymax = Math.min(this.thread.y, imageaheight - 1)
+
+        var maxr = 0; var maxg = 0; var maxb = 0; var maxa = 0; var loopCount = 0
+        for (let ay = aymin; ay <= aymax; ay++) {
+          for (let ax = axmin; ax <= axmax; ax++) {
+            const pixela = imagea[ay][ax]
+            const pixelb = imageb[this.thread.y-ay][this.thread.x-ax]
+
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            // The following may not be succinct but it happens O(n^4) times so trying to keep efficient!
+            if (condensingFunction == 1) { // Maximum
+              if (rangeFunction == 1) {
+                // For each channel, we take the minimum of the two pixel values and then look for the maximum of all of those:
+                maxr = Math.max(maxr, Math.min(pixela[0], pixelb[0]))
+                maxg = Math.max(maxg, Math.min(pixela[1], pixelb[1]))
+                maxb = Math.max(maxb, Math.min(pixela[2], pixelb[2]))
+                maxa = Math.max(maxa, Math.min(pixela[3], pixelb[3]))
+              }
+              if (rangeFunction == 2) {
+                // For each channel take the average of the two pixel values and then look for the maximum of all of those:
+                maxr = Math.max(maxr, (pixela[0] + pixelb[0]) / 2)
+                maxg = Math.max(maxg, (pixela[1] + pixelb[1]) / 2)
+                maxb = Math.max(maxb, (pixela[2] + pixelb[2]) / 2)
+                maxa = Math.max(maxa, (pixela[3] + pixelb[3]) / 2)
+              }
+              if (rangeFunction == 3) {
+                maxr = Math.max(maxr, pixela[0] * pixelb[0])
+                maxg = Math.max(maxg, pixela[1] * pixelb[1])
+                maxb = Math.max(maxb, pixela[2] * pixelb[2])
+                maxa = Math.max(maxa, pixela[3] * pixelb[3])
+              }
+            }
+            if (condensingFunction == 2) { // Average which we achieve by adding and then divide later
+              if (rangeFunction == 1) {
+                maxr = maxr + Math.min(pixela[0], pixelb[0])
+                maxg = maxg + Math.min(pixela[1], pixelb[1])
+                maxb = maxb + Math.min(pixela[2], pixelb[2])
+                maxa = maxa + Math.min(pixela[3], pixelb[3])
+              }
+              if (rangeFunction == 2) {
+                maxr = maxr + (pixela[0] + pixelb[0]) / 2
+                maxg = maxg + (pixela[1] + pixelb[1]) / 2
+                maxb = maxb + (pixela[2] + pixelb[2]) / 2
+                maxa = maxa + (pixela[3] + pixelb[3]) / 2
+              }
+              if (rangeFunction == 3) {
+                maxr = maxr + pixela[0] * pixelb[0]
+                maxg = maxg + pixela[1] * pixelb[1]
+                maxb = maxb + pixela[2] * pixelb[2]
+                maxa = maxa + pixela[3] * pixelb[3]
+              }
+              if (maxr+maxg+maxb+maxa > 0) {  // Only count if there's a non-zero amount
+                loopCount = loopCount + 1
+              }
+            }
+            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+          }
+        }
+        if (condensingFunction == 2) { // Average
+          if (loopCount > 0) {
+            maxr = maxr / loopCount
+            maxg = maxg / loopCount
+            maxb = maxb / loopCount
+            maxa = maxa / loopCount
+          }
+        }
+        this.color(maxr, maxg, maxb, maxa)
+      })
+      .setGraphical(true)
+      .setOutput([200, 200])
+
+      //========================================================================
+      function canvasImage(canvas) {
+        const image = document.createElement('img')
+        image.src = canvas.toDataURL();
+        return image
+      }
+
+      function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      function removeAllChildNodes(parent) {
+        while (parent.firstChild) {
+          parent.removeChild(parent.firstChild);
+        }
+      }
+
+      function replaceChild(parent, child) {
+        removeAllChildNodes(parent);
+        parent.appendChild(child);
+      }
+
+      console.log("Started");
+
+      // Keep references
+      const elementRotor = document.getElementById("rotor")
+      const elementRotorFixed = document.getElementById("rotorFixed")
+      const elementRotorSnapshots = document.getElementById("rotorSnapshots")
+      const elementRotorFixedSnapshots = document.getElementById("rotorFixedSnapshots")
+      const elementRotorSum = document.getElementById("rotorSum")
+
+      // Set up the animation:
+      let tween = gsap.to(".plusrotate", {duration: 6.0, rotate: 180, transformOrigin: '50% 50%', repeat: 1, ease:
+Power0.easeNone} );
+      tween.pause();
+
+      const framesPerSecond = 10
+      const totalDuration = tween.totalDuration()
+      const frameInterval = 1/framesPerSecond
+      console.log("totalDuration="+totalDuration)
+
+      async function snaps() {
+
+        //Fixed
+        const canvas = await html2canvas(elementRotorFixed, {scale: "1.0", width: "100", height: "100"})
+        await sleep(100);
+
+        const fixedImage = canvasImage(canvas)
+        console.log("Snapped " + "fixed" + "!");
+        replaceChild(elementRotorFixedSnapshots, fixedImage)
+        console.log("Showed frame " + "fixed");
+
+        //Moving
+        let images = []
+        let sumImages = []
+        for (let progress = 0; progress <= totalDuration; progress += frameInterval ) {
+          // Seek position
+          tween.seek(progress);
+
+          // Turn input into image
+          const canvas = await html2canvas(elementRotor, {scale: "1.0", width: "100", height: "100"})
+          await sleep(100);
+
+          const movingImage = canvasImage(canvas)
+          images.push(movingImage)
+          console.log("Snapped " + progress + "!");
+
+          // Calculate minkowski sum
+          kernel(fixedImage, movingImage, 1, 1);
+          await sleep(100);
+
+          const sumImage = canvasImage(kernel.canvas)
+          sumImages.push(sumImage)
+        }
+
+        for (let loop = 1; loop <= 10; loop++) {
+          for (const [index, image] of images.entries()) {
+            replaceChild(elementRotorSnapshots, image)
+            replaceChild(elementRotorSum, sumImages[index])
+            console.log("Showed frame " + index + " of " + images.length);
+
+            await sleep(frameInterval*1000);
+          }
+        }
+      }
+
+      snaps();
+
+      console.log("Finished");
+    </script>
+
+
+</body>
+
+</html>
