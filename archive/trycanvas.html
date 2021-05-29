@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+
+<head>
+  <style>
+    body{ background-color:white; }
+    #canvas{border:1px solid red; }
+  </style>
+</head>
+
+<body>
+  <div id="IMG-1"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.7/dist/html2canvas.min.js"></script>
+
+  <script>
+    var canvas=document.createElement("canvas");
+    var ctx=canvas.getContext("2d");
+
+    var image = new Image();
+    image.onload = function(){
+        ctx.drawImage(this, 0,0);
+    }
+    image.src = "images/TriAndCross.svg"
+
+    document.getElementById('IMG-1').appendChild(image)
+
+    // html2canvas
+    const screenshotTarget = document.body;
+
+    html2canvas(screenshotTarget).then((canvas) => {
+        const base64image = canvas.toDataURL("image/png");
+        window.location.href = base64image;
+    });
+
+  </script>
+
+</body>
+</html>

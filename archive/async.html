@@ -1,0 +1,105 @@
+<!DOCTYPE html> <html lang="en">
+<head> <title>Async</title> </head>
+<body>
+  <script>
+    // const resolveInTwoSeconds = () => {
+    //   return new Promise((resolve) => {
+    //     setTimeout(() => resolve(2), 2000);
+    //   })
+    // };
+    //
+    // const resolveInThreeSeconds = () => {
+    //   return new Promise((resolve) => {
+    //     setTimeout(() => resolve(3), 3000);
+    //   })
+    // };
+    //
+    // const resolveInFiveSeconds = () => {
+    //   return new Promise((resolve) => {
+    //     setTimeout(() => resolve(5), 5000);
+    //   })
+    // };
+    //
+    // (async function() {
+    //   const asyncFunctions = [resolveInTwoSeconds, resolveInThreeSeconds, resolveInFiveSeconds];
+    //   await asyncFunctions.reduce(async (previousPromise, nextAsyncFunction) => {
+    //     await previousPromise;
+    //     const result = await nextAsyncFunction();
+    //     console.log(result);
+    //   }, Promise.resolve());
+    // })();
+
+    // const resolveInNSeconds = (n) => {
+    //   return new Promise((resolve) => {
+    //     setTimeout(() => resolve(n), n * 1000);
+    //   })
+    // };
+    //
+    // (async function() {
+    //   const delays = [2,3,5];
+    //   await delays.reduce(async (previousPromise, delay) => {
+    //     await previousPromise;
+    //     const result = await resolveInNSeconds(delay);
+    //     console.log(result);
+    //   }, Promise.resolve());
+    // })();
+
+    // (async function() {
+    //   const delays = [2,3,5];
+    //   await delays.reduce(async (previousPromise, delay) => {
+    //     await previousPromise;
+    //     const result = await new Promise((resolve) => {
+    //       setTimeout(() => resolve(delay), delay * 1000);
+    //     })
+    //     console.log(result);
+    //   }, Promise.resolve());
+    // })();
+
+
+    // function sequencer(array, waitForThis, andThen){
+    //   return (async function() {
+    //     await array.reduce(async (previousPromise, item) => {
+    //       await previousPromise;
+    //       const result = await waitForThis(item);
+    //       andThen(result)
+    //     }, Promise.resolve());
+    //   })()
+    // }
+    //
+    const resolveInNSeconds = (n) => {
+      return new Promise((resolve) => {
+        setTimeout(() => resolve(n), n * 1000);
+      })
+    };
+    //
+    // const logResult = (result) => {
+    //   console.log(result);
+    // }
+    //
+    // sequencer([2,3,5], resolveInNSeconds, logResult)
+
+    async function foo() {
+      console.log("start")
+      await resolveInNSeconds(1)
+      console.log("one")
+      await resolveInNSeconds(2)
+      console.log("two")
+      await resolveInNSeconds(3)
+      console.log("three")
+      for (let wait = 1; wait < 4; wait++) {
+        await resolveInNSeconds(wait)
+        console.log("for " + wait)
+      }
+    }
+
+    foo()
+  //   (async function() {
+  //     const delays = [2,3,5];
+  //     await delays.reduce(async (previousPromise, delay) => {
+  //       await previousPromise;
+  //       const result = await resolveInNSeconds(delay);
+  //       console.log(result);
+  //     }, Promise.resolve());
+  //   })();
+  // </script>
+</body>

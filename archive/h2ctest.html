@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>html2canvas Trial</title>
+</head>
+
+<body>
+
+  <div id="captureOrb">
+    <img src='images/Orb.png'></div>
+  </div>
+
+  <div id="captureSvg">
+    <svg width="100" height="100">
+      <path id ="square" fill= "#000000FF" d="M0 0 H100 V100 H0 Z"/>
+      <path id ="square" fill= "#800000FF" d="M10 10 H90 V90 H10 Z"/>
+    </svg>
+  </div>
+
+  <script src="dist/html2canvas.min.js"></script>
+
+  <script>
+
+    html2canvas(document.querySelector("#captureSvg")).then(canvas => {
+     document.body.appendChild(canvas)
+    })
+
+  </script>
+
+</body>
+</html>
