@@ -1,0 +1,23 @@
+
+<div background-color:green;>
+  <h2>Testing</h2>
+  <img id='TEST3X2' src='images/Image3x2.png'>
+  <!-- <embed src='images/TriAndCross.svg'> -->
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.min.js" integrity="sha512-cdV6j5t5o24hkSciVrb8Ki6FveC2SgwGfLE31+ZQRHAeSRxYhAQskLkq3dLm8ZcWe1N3vBOEYmmbhzf7NTtFFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+    var node = document.getElementById('TEST3X2');
+
+    htmlToImage.toPixelData(node)
+      .then(function (pixels) {
+        for (var y = 0; y < node.scrollHeight; ++y) {
+          for (var x = 0; x < node.scrollWidth; ++x) {
+            pixelAtXYOffset = (4 * y * node.scrollHeight) + (4 * x);
+            /* pixelAtXY is a Uint8Array[4] containing RGBA values of the pixel at (x, y) in the range 0..255 */
+            pixelAtXY = pixels.slice(pixelAtXYOffset, pixelAtXYOffset + 4);
+            console.log(`Pixel At (${x},${y}) = ${pixelAtXY}`)
+          }
+        }
+      });
