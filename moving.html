@@ -180,14 +180,30 @@ rotor<!DOCTYPE html>
       .setOutput([200, 200])
 
       //========================================================================
+
+      function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      function onload2promise(obj){
+        return new Promise((resolve, reject) => {
+          obj.onload = () => resolve(obj);
+          obj.onerror = reject;
+        });
+      }
+
       function canvasImage(canvas) {
         const image = document.createElement('img')
         image.src = canvas.toDataURL();
         return image
       }
 
-      function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+      async function canvasImageWait(canvas){
+        let image = new Image();
+        let imagePromise = onload2promise(image);
+        image.src = canvas.toDataURL();
+        await imagePromise;
+        return image
       }
 
       function removeAllChildNodes(parent) {
@@ -226,9 +242,8 @@ Power0.easeNone} );
 
         //Fixed
         const canvas = await html2canvas(elementRotorFixed, {scale: "1.0", width: "100", height: "100"})
-        //await sleep(100);
-
-        const fixedImage = canvasImage(canvas)
+        const fixedImage = await canvasImageWait(canvas)
+        //await sleep(50);
         console.log("Snapped " + "fixed" + "!");
         replaceChild(elementRotorFixedSnapshots, fixedImage)
         console.log("Showed frame " + "fixed");
@@ -244,15 +259,12 @@ Power0.easeNone} );
 
           // Turn input into image
           const canvas = await html2canvas(elementRotor, {scale: "1.0", width: "100", height: "100"})
-          //await sleep(100);
-
-          const movingImage = canvasImage(canvas)
+          const movingImage = await canvasImageWait(canvas)
           images.push(movingImage)
           console.log("Snapped " + progress + "!");
 
           // Calculate minkowski sum
           kernel(fixedImage, movingImage, 1, 1);
-          //await sleep(100);
 
           const sumImage = canvasImage(kernel.canvas)
           sumImages.push(sumImage)
