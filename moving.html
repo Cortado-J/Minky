@@ -1,4 +1,4 @@
-rotor<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -13,19 +13,17 @@ rotor<!DOCTYPE html>
     h2 { color: maroon; margin-bottom: 0px }
     h3 { color: maroon; margin-bottom: 0px }
     p  { margin-top: 0px; margin-bottom: 0px }
-    /* #inputs { white-space: nowrap; display: block }
-    #rotorSnapshots { white-space: nowrap; display: block } */
   </style>
 
-  <title>Moving</title>
+  <title>Moving Minkowski Sum</title>
 </head>
 
 <body>
   <div class="test">
-    <h1>Moving</h1>
     <form action=".\index.html">
       <input type="submit" value="Home" />
     </form>
+    <h1>Moving Minkowski Sum</h1>
 
     <table>
       <tr>
@@ -64,24 +62,6 @@ rotor<!DOCTYPE html>
 
       </tr>
     </table>
-
-    <div>
-      <table>
-        <tr>
-          <td>
-            <div id="rotorFixedSnapshots"></div>
-          </td>
-          <td><img src='images/MinkowskiSum.png'></td>
-          <td>
-            <div id="rotorSnapshots"></div>
-          </td>
-          <td><img src='images/EqualsSymbol.png'></td>
-          <td>
-            <div id="rotorSum"></div>
-          </td>
-        </tr>
-      </table>
-    </div>
 
     <!-- Get external scripts -------------------------------->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.min.js" integrity="sha512-cdV6j5t5o24hkSciVrb8Ki6FveC2SgwGfLE31+ZQRHAeSRxYhAQskLkq3dLm8ZcWe1N3vBOEYmmbhzf7NTtFFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -178,7 +158,6 @@ rotor<!DOCTYPE html>
       })
       .setGraphical(true)
       .setOutput([200, 200])
-
       //========================================================================
 
       function sleep(ms) {
@@ -224,10 +203,6 @@ rotor<!DOCTYPE html>
       const elementRotorFixed = document.getElementById("rotorFixed")
       const elementMinkySum = document.getElementById("minkySum")
 
-      const elementRotorSnapshots = document.getElementById("rotorSnapshots")
-      const elementRotorFixedSnapshots = document.getElementById("rotorFixedSnapshots")
-      const elementRotorSum = document.getElementById("rotorSum")
-
       // Set up the animation:
       let tween = gsap.to(".plusrotate", {duration: 6.0, rotate: 180, transformOrigin: '50% 50%', repeat: 1, ease:
 Power0.easeNone} );
@@ -239,46 +214,38 @@ Power0.easeNone} );
       console.log("totalDuration="+totalDuration)
 
       async function snaps() {
-
         //Fixed
         const canvas = await html2canvas(elementRotorFixed, {scale: "1.0", width: "100", height: "100"})
         const fixedImage = await canvasImageWait(canvas)
         //await sleep(50);
         console.log("Snapped " + "fixed" + "!");
-        replaceChild(elementRotorFixedSnapshots, fixedImage)
-        console.log("Showed frame " + "fixed");
 
         elementMinkySum.appendChild(kernel.canvas);
 
         //Moving
-        let images = []
-        let sumImages = []
-        for (let progress = 0; progress <= totalDuration; progress += frameInterval ) {
-          // Seek position
-          tween.seek(progress);
-
-          // Turn input into image
-          const canvas = await html2canvas(elementRotor, {scale: "1.0", width: "100", height: "100"})
-          const movingImage = await canvasImageWait(canvas)
-          images.push(movingImage)
-          console.log("Snapped " + progress + "!");
-
-          // Calculate minkowski sum
-          kernel(fixedImage, movingImage, 1, 1);
-
-          const sumImage = canvasImage(kernel.canvas)
-          sumImages.push(sumImage)
-        }
-
         for (let loop = 1; loop <= 10; loop++) {
-          for (const [index, image] of images.entries()) {
-            replaceChild(elementRotorSnapshots, image)
-            replaceChild(elementRotorSum, sumImages[index])
-            console.log("Showed frame " + index + " of " + images.length);
+          for (let progress = 0; progress <= totalDuration; progress += frameInterval ) {
+            // Seek position
+            tween.seek(progress);
 
-            await sleep(frameInterval*1000);
+            // Turn input into image
+            const canvas = await html2canvas(elementRotor, {scale: "1.0", width: "100", height: "100"})
+            const movingImage = await canvasImageWait(canvas)
+
+            // Calculate minkowski sum
+            kernel(fixedImage, movingImage, 1, 1);
           }
         }
+
+        // for (let loop = 1; loop <= 10; loop++) {
+        //   for (const [index, image] of images.entries()) {
+        //     replaceChild(elementRotorSnapshots, image)
+        //     replaceChild(elementRotorSum, sumImages[index])
+        //     console.log("Showed frame " + index + " of " + images.length);
+        //
+        //     await sleep(frameInterval*1000);
+        //   }
+        // }
       }
 
       snaps();
