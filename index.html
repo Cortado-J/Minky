@@ -2,291 +2,331 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-  <style>
-    body { background-color: linen }
-    h1 { color: maroon; margin-bottom: 0px }
-    h2 { color: maroon; margin-bottom: 0px }
-    h3 { color: maroon; margin-bottom: 0px }
-    p  { margin-top: 0px; margin-bottom: 0px }
-  </style>
+    <style>
+        body {
+            background-color: linen
+        }
+        
+        h1 {
+            color: maroon;
+            margin-bottom: 0px
+        }
+        
+        h2 {
+            color: maroon;
+            margin-bottom: 0px
+        }
+        
+        h3 {
+            color: maroon;
+            margin-bottom: 0px
+        }
+        
+        p {
+            margin-top: 0px;
+            margin-bottom: 0px
+        }
+    </style>
 
-  <title>Minky</title>
+    <title>Minky</title>
 </head>
 
 <body>
-  <div class="test">
-    <!-- Page Content -->
-    <div id="page-content-wrapper" style="margin-bottom: 10px;">
-      <form action=".\moving.html">
-        <input type="submit" value="Moving Sum" />
-      </form>
-
-      <h1>Minky: Minkowski sums of images</h1>
-
-      <!-- Image Chooser for selecteding which images to add: -->
-      <div id="TAG-ImageChooser">
-        <h2>Select images:</h2>
-        <!-- Choice of images will go here -->
-      </div>
-
-      <table>
-        <tr>
-          <td VALIGN=TOP>
-            <form>
-              <h3>Select 'Range Function'</h2>
-              <div><input type="radio" name="rangeFunction" onchange="changeRangeFn(1);" value="1" checked="checked"> Minimum</div>
-              <div><input type="radio" name="rangeFunction" onchange="changeRangeFn(2);" value="2"> Average</div>
-              <div><input type="radio" name="rangeFunction" onchange="changeRangeFn(3);" value="3"> Multiply</div>
+    <div class="test">
+        <!-- Page Content -->
+        <div id="page-content-wrapper" style="margin-bottom: 10px;">
+            <form action=".\moving.html">
+                <input type="submit" value="Moving Sum" />
             </form>
-          </td>
 
-          <td VALIGN=TOP>
-          </td>
+            <h1>Minky: Minkowski sums of images</h1>
 
-          <td VALIGN=TOP>
-            <form>
-              <h3>Select 'Condensing Function'</h2>
-              <div><input type="radio" name="condensingFunction" onchange="changeCondensingFn(1);" value="1" checked="checked"> Maximum</div>
-              <div><input type="radio" name="condensingFunction" onchange="changeCondensingFn(2);" value="2"> Average</div>
-            </form>
-          </td>
-        </tr>
-      </table>
+            <!-- Image Chooser for selecteding which images to add: -->
+            <div id="TAG-ImageChooser">
+                <h2>Select images:</h2>
+                <!-- Choice of images will go here -->
+            </div>
 
-      <h2>Minkowski Equation:</h2>
-      <table>
-        <tr>
-          <td><div id="IMG-1"></div></td>
-          <td><img src='images/MinkowskiSum.png'></div></td>
-          <td><div id="IMG-2"></div></td>
-          <td><img src='images/EqualsSymbol.png'></div></td>
-          <td><div id="IMG-SUM"></div></td>
-        </tr>
-      </table>
+            <table>
+                <tr>
+                    <td VALIGN=TOP>
+                        <form>
+                            <h3>Select 'Range Function'</h2>
+                                <div><input type="radio" name="rangeFunction" onchange="changeRangeFn(1);" value="1" checked="checked"> Minimum</div>
+                                <div><input type="radio" name="rangeFunction" onchange="changeRangeFn(2);" value="2"> Average</div>
+                                <div><input type="radio" name="rangeFunction" onchange="changeRangeFn(3);" value="3"> Multiply</div>
+                        </form>
+                    </td>
 
-      <h2>Minkowski Table:</h2>
-      <div id="TAG-OperationTable"></div>
+                    <td VALIGN=TOP>
+                    </td>
+
+                    <td VALIGN=TOP>
+                        <form>
+                            <h3>Select 'Condensing Function'</h2>
+                                <div><input type="radio" name="condensingFunction" onchange="changeCondensingFn(1);" value="1" checked="checked"> Maximum</div>
+                                <div><input type="radio" name="condensingFunction" onchange="changeCondensingFn(2);" value="2"> Average</div>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+
+            <h2>Minkowski Equation:</h2>
+            <table>
+                <tr>
+                    <td>
+                        <div id="IMG-1"></div>
+                    </td>
+                    <td><img src='images/MinkowskiSum.png'></div>
+        </td>
+        <td>
+            <div id="IMG-2"></div>
+        </td>
+        <td><img src='images/EqualsSymbol.png'></div>
+    </td>
+    <td>
+        <div id="IMG-SUM"></div>
+    </td>
+    </tr>
+    </table>
+
+    <h2>Minkowski Table:</h2>
+    <div id="TAG-OperationTable"></div>
 
     </div>
-  </div>
+    </div>
 
-  <script src="dist/gpu-browser.min.js"></script>
+    <!-- <script src="dist/gpu-browser.min.js"></script> -->
+    <script src="dist/gpu-browser.js"></script>
 
-  <script>
-    const gpu = new GPU({ mode: 'gpu' });
-    var imageSize = 100
+    <script>
+        const gpu = new GPU({
+            mode: 'gpu'
+        });
+        var imageSize = 100
 
-    //========================================================================
-    // This routine will be run for each pixel of the output with:
-    //   this.thread.x as the x coordinate of the output
-    //   this.thread.y as the y coordinate of the output
-    const kernel = gpu.createKernel(function(imagea, imageb, rangeFunction, condensingFunction) {
-      const imageawidth  = 100
-      const imagebwidth  = 100
-      const imageaheight = 100
-      const imagebheight = 100
-      const imageoutwidth   = imageawidth  + imagebwidth  - 1
-      const imageoutheight  = imageaheight + imagebheight - 1
+        //========================================================================
+        // This routine will be run for each pixel of the output with:
+        //   this.thread.x as the x coordinate of the output
+        //   this.thread.y as the y coordinate of the output
+        const kernel = gpu.createKernel(function(imagea, imageb, rangeFunction, condensingFunction) {
+                const imageawidth = 100
+                const imagebwidth = 100
+                const imageaheight = 100
+                const imagebheight = 100
+                const imageoutwidth = imageawidth + imagebwidth - 1
+                const imageoutheight = imageaheight + imagebheight - 1
 
-      const axmin = Math.max(0, this.thread.x - imagebwidth + 1)
-      const axmax = Math.min(this.thread.x, imageawidth - 1)
-      const aymin = Math.max(0, this.thread.y - imagebheight + 1)
-      const aymax = Math.min(this.thread.y, imageaheight - 1)
+                const axmin = Math.max(0, this.thread.x - imagebwidth + 1)
+                const axmax = Math.min(this.thread.x, imageawidth - 1)
+                const aymin = Math.max(0, this.thread.y - imagebheight + 1)
+                const aymax = Math.min(this.thread.y, imageaheight - 1)
 
-      var maxr = 0; var maxg = 0; var maxb = 0; var maxa = 0; var loopCount = 0
-      for (let ay = aymin; ay <= aymax; ay++) {
-        for (let ax = axmin; ax <= axmax; ax++) {
-          const pixela = imagea[ay][ax]
-          const pixelb = imageb[this.thread.y-ay][this.thread.x-ax]
+                var maxr = 0;
+                var maxg = 0;
+                var maxb = 0;
+                var maxa = 0;
+                var loopCount = 0
+                for (let ay = aymin; ay <= aymax; ay++) {
+                    for (let ax = axmin; ax <= axmax; ax++) {
+                        const pixela = imagea[ay][ax]
+                        const pixelb = imageb[this.thread.y - ay][this.thread.x - ax]
 
-          //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-          // The following may not be succinct but it happens O(n^4) times so trying to keep efficient!
-          if (condensingFunction == 1) { // Maximum
-            if (rangeFunction == 1) {
-              // For each channel, we take the minimum of the two pixel values and then look for the maximum of all of those:
-              maxr = Math.max(maxr, Math.min(pixela[0], pixelb[0]))
-              maxg = Math.max(maxg, Math.min(pixela[1], pixelb[1]))
-              maxb = Math.max(maxb, Math.min(pixela[2], pixelb[2]))
-              maxa = Math.max(maxa, Math.min(pixela[3], pixelb[3]))
-            }
-            if (rangeFunction == 2) {
-              // For each channel take the average of the two pixel values and then look for the maximum of all of those:
-              maxr = Math.max(maxr, (pixela[0] + pixelb[0]) / 2)
-              maxg = Math.max(maxg, (pixela[1] + pixelb[1]) / 2)
-              maxb = Math.max(maxb, (pixela[2] + pixelb[2]) / 2)
-              maxa = Math.max(maxa, (pixela[3] + pixelb[3]) / 2)
-            }
-            if (rangeFunction == 3) {
-              maxr = Math.max(maxr, pixela[0] * pixelb[0])
-              maxg = Math.max(maxg, pixela[1] * pixelb[1])
-              maxb = Math.max(maxb, pixela[2] * pixelb[2])
-              maxa = Math.max(maxa, pixela[3] * pixelb[3])
-            }
-          }
-          if (condensingFunction == 2) { // Average which we achieve by adding and then divide later
-            if (rangeFunction == 1) {
-              maxr = maxr + Math.min(pixela[0], pixelb[0])
-              maxg = maxg + Math.min(pixela[1], pixelb[1])
-              maxb = maxb + Math.min(pixela[2], pixelb[2])
-              maxa = maxa + Math.min(pixela[3], pixelb[3])
-            }
-            if (rangeFunction == 2) {
-              maxr = maxr + (pixela[0] + pixelb[0]) / 2
-              maxg = maxg + (pixela[1] + pixelb[1]) / 2
-              maxb = maxb + (pixela[2] + pixelb[2]) / 2
-              maxa = maxa + (pixela[3] + pixelb[3]) / 2
-            }
-            if (rangeFunction == 3) {
-              maxr = maxr + pixela[0] * pixelb[0]
-              maxg = maxg + pixela[1] * pixelb[1]
-              maxb = maxb + pixela[2] * pixelb[2]
-              maxa = maxa + pixela[3] * pixelb[3]
-            }
-            if (maxr+maxg+maxb+maxa > 0) {  // Only count if there's a non-zero amount
-              loopCount = loopCount + 1
-            }
-          }
-          //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                        // The following may not be succinct but it happens O(n^4) times so trying to keep efficient!
+                        if (condensingFunction == 1) { // Maximum
+                            if (rangeFunction == 1) {
+                                // For each channel, we take the minimum of the two pixel values and then look for the maximum of all of those:
+                                maxr = Math.max(maxr, Math.min(pixela[0], pixelb[0]))
+                                maxg = Math.max(maxg, Math.min(pixela[1], pixelb[1]))
+                                maxb = Math.max(maxb, Math.min(pixela[2], pixelb[2]))
+                                maxa = Math.max(maxa, Math.min(pixela[3], pixelb[3]))
+                            }
+                            if (rangeFunction == 2) {
+                                // For each channel take the average of the two pixel values and then look for the maximum of all of those:
+                                maxr = Math.max(maxr, (pixela[0] + pixelb[0]) / 2)
+                                maxg = Math.max(maxg, (pixela[1] + pixelb[1]) / 2)
+                                maxb = Math.max(maxb, (pixela[2] + pixelb[2]) / 2)
+                                maxa = Math.max(maxa, (pixela[3] + pixelb[3]) / 2)
+                            }
+                            if (rangeFunction == 3) {
+                                maxr = Math.max(maxr, pixela[0] * pixelb[0])
+                                maxg = Math.max(maxg, pixela[1] * pixelb[1])
+                                maxb = Math.max(maxb, pixela[2] * pixelb[2])
+                                maxa = Math.max(maxa, pixela[3] * pixelb[3])
+                            }
+                        }
+                        if (condensingFunction == 2) { // Average which we achieve by adding and then divide later
+                            if (rangeFunction == 1) {
+                                maxr = maxr + Math.min(pixela[0], pixelb[0])
+                                maxg = maxg + Math.min(pixela[1], pixelb[1])
+                                maxb = maxb + Math.min(pixela[2], pixelb[2])
+                                maxa = maxa + Math.min(pixela[3], pixelb[3])
+                            }
+                            if (rangeFunction == 2) {
+                                maxr = maxr + (pixela[0] + pixelb[0]) / 2
+                                maxg = maxg + (pixela[1] + pixelb[1]) / 2
+                                maxb = maxb + (pixela[2] + pixelb[2]) / 2
+                                maxa = maxa + (pixela[3] + pixelb[3]) / 2
+                            }
+                            if (rangeFunction == 3) {
+                                maxr = maxr + pixela[0] * pixelb[0]
+                                maxg = maxg + pixela[1] * pixelb[1]
+                                maxb = maxb + pixela[2] * pixelb[2]
+                                maxa = maxa + pixela[3] * pixelb[3]
+                            }
+                            if (maxr + maxg + maxb + maxa > 0) { // Only count if there's a non-zero amount
+                                loopCount = loopCount + 1
+                            }
+                        }
+                        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                    }
+                }
+                if (condensingFunction == 2) { // Average
+                    if (loopCount > 0) {
+                        maxr = maxr / loopCount
+                        maxg = maxg / loopCount
+                        maxb = maxb / loopCount
+                        maxa = maxa / loopCount
+                    }
+                }
+                this.color(maxr, maxg, maxb, maxa)
+            })
+            .setGraphical(true)
+            .setOutput([200, 200])
+
+        //========================================================================
+        function doMinkowski() {
+            kernel(image1, image2, rangeFunctionValue, condensingFunctionValue);
         }
-      }
-      if (condensingFunction == 2) { // Average
-        if (loopCount > 0) {
-          maxr = maxr / loopCount
-          maxg = maxg / loopCount
-          maxb = maxb / loopCount
-          maxa = maxa / loopCount
+
+        //========================================================================
+        const imageNames = ['Plus', 'Minus', 'Multiply', 'Divide', 'Happy', 'Sad', 'Orb', 'RedTriangle', 'Cool', 'Dave', 'Rgb']
+            //var files = fs.readdirSync('/images/'); ??
+        const defaultImage1 = 'Plus'
+        const defaultImage2 = 'Multiply'
+
+        createRowOfImages('TAG-ImageChooser', imageNames)
+
+        createOperationTable('TAG-OperationTable', ['Plus', 'Minus', 'Multiply', 'Divide'])
+
+        const image1 = loadImage(defaultImage1)
+        image1.onload = onload
+        const image2 = loadImage(defaultImage2)
+        image2.onload = onload
+
+        // Set up two equation images and their minkowski sum:
+        document.getElementById('IMG-1').appendChild(image1);
+        document.getElementById('IMG-2').appendChild(image2);
+        document.getElementById('IMG-SUM').appendChild(kernel.canvas);
+
+        // Use to cycle between selected images
+        var imageChoice = 0
+
+        // Use to select functions
+        var rangeFunctionValue = 1
+        var condensingFunctionValue = 1
+
+        const totalImages = 2;
+        let loadedImages = 0;
+
+        function onload() {
+            loadedImages++;
+            if (loadedImages === totalImages) {
+                doMinkowski()
+            }
+        };
+        //========================================================================
+        // Helper functions
+
+        function loadImage(imageName) {
+            const image = document.createElement('img')
+                //image.crossOrigin = ""
+            image.src = 'images/' + imageName + '.png'
+            return image
         }
-      }
-      this.color(maxr, maxg, maxb, maxa)
-    })
-    .setGraphical(true)
-    .setOutput([200, 200])
 
-    //========================================================================
-    function doMinkowski() {
-      kernel(image1, image2, rangeFunctionValue, condensingFunctionValue);
-    }
+        function createRowOfImages(insertAtThisId, imageNames) {
+            var tbl = document.createElement('table');
+            var tr = tbl.insertRow();
+            for (imageNum in imageNames) {
+                imageName = imageNames[imageNum]
+                var td = tr.insertCell();
 
-    //========================================================================
-    const imageNames = ['Plus', 'Minus', 'Multiply', 'Divide', 'Happy', 'Sad', 'Orb', 'RedTriangle', 'Cool', 'Dave', 'Rgb']
-    //var files = fs.readdirSync('/images/'); ??
-    const defaultImage1 = 'Plus'
-    const defaultImage2 = 'Multiply'
-
-    createRowOfImages('TAG-ImageChooser', imageNames)
-
-    createOperationTable('TAG-OperationTable', ['Plus', 'Minus', 'Multiply', 'Divide'])
-
-    const image1 = loadImage(defaultImage1)
-    image1.onload = onload
-    const image2 = loadImage(defaultImage2)
-    image2.onload = onload
-
-    // Set up two equation images and their minkowski sum:
-    document.getElementById('IMG-1').appendChild(image1);
-    document.getElementById('IMG-2').appendChild(image2);
-    document.getElementById('IMG-SUM').appendChild(kernel.canvas);
-
-    // Use to cycle between selected images
-    var imageChoice = 0
-
-    // Use to select functions
-    var rangeFunctionValue = 1
-    var condensingFunctionValue = 1
-
-    const totalImages = 2;
-    let loadedImages = 0;
-
-    function onload() {
-      loadedImages++;
-      if (loadedImages === totalImages) {
-        doMinkowski()
-      }
-    };
-    //========================================================================
-    // Helper functions
-
-    function loadImage(imageName) {
-      const image = document.createElement('img')
-      //image.crossOrigin = ""
-      image.src = 'images/' + imageName + '.png'
-      return image
-    }
-
-    function createRowOfImages(insertAtThisId, imageNames){
-      var tbl  = document.createElement('table');
-      var tr = tbl.insertRow();
-      for (imageNum in imageNames) {
-        imageName = imageNames[imageNum]
-        var td = tr.insertCell();
-
-        const image = loadImage(imageName)
-        image.id = imageName
-        image.onclick = function() { selectImage(this) }
-        td.appendChild(image)
-      }
-      document.getElementById(insertAtThisId).appendChild(tbl)
-    }
-
-    function createOperationTable(insertAtThisId, imageNames){
-      var tbl  = document.createElement('table');
-      var tr = tbl.insertRow();
-      // Header
-      //Top Left Empty Cell
-      tr.insertCell();
-      for (imageNum in imageNames) {
-        imageName = imageNames[imageNum]
-        var td = tr.insertCell();
-        const image = loadImage(imageName)
-        image.id = imageName
-        td.appendChild(image)
-      }
-      // Body
-      for (imageNum in imageNames) {
-        var tr = tbl.insertRow();
-        imageName = imageNames[imageNum]
-        var td = tr.insertCell();
-        const image = loadImage(imageName)
-        image.id = imageName
-        td.appendChild(image)
-        for (emptyNum in imageNames) {
-          tr.insertCell();
+                const image = loadImage(imageName)
+                image.id = imageName
+                image.onclick = function() {
+                    selectImage(this)
+                }
+                td.appendChild(image)
+            }
+            document.getElementById(insertAtThisId).appendChild(tbl)
         }
-      }
-      document.getElementById(insertAtThisId).appendChild(tbl)
-    }
 
-    function selectImage(image) {
-      console.log(`Clicked image ${image.id}`)
-      const imagePath = 'images/' + image.id + '.png';
-      if (imageChoice == 0) {
-        image1.src = imagePath
-        imageChoice = 1
-      } else {
-        image2.src = imagePath
-        imageChoice = 0
-      }
-      doMinkowski()
-    }
+        function appendImage(td, imageName) {
+            const image = loadImage(imageName)
+            image.id = imageName
+            td.appendChild(image)
+        }
 
-    function changeRangeFn(newRangeFunctionValue) {
-      console.log("Range Function value changed to " + newRangeFunctionValue)
-      rangeFunctionValue = newRangeFunctionValue
-      doMinkowski()
-    }
+        function createOperationTable(insertAtThisId, imageNames) {
+            var tbl = document.createElement('table');
+            var tr = tbl.insertRow();
+            //Top Left Cell
+            var tl = tr.insertCell();
+            tl.appendChild(loadImage('MinkowskiSum'))
+                // Header
+            for (imageNum in imageNames) {
+                imageName = imageNames[imageNum]
+                var td = tr.insertCell();
+                tl.appendChild(loadImage(imageName))
+            }
+            // Body
+            for (imageNum in imageNames) {
+                var tr = tbl.insertRow();
+                imageName = imageNames[imageNum]
+                var td = tr.insertCell();
+                td.appendChild(loadImage(imageName))
+                for (emptyNum in imageNames) {
+                    td = tr.insertCell();
+                    td.id = 'XXX'
+                }
+            }
+            document.getElementById(insertAtThisId).appendChild(tbl)
+        }
 
-    function changeCondensingFn(newCondensingFunctionValue) {
-      console.log("Condensing Function value changed to " + newCondensingFunctionValue)
-      condensingFunctionValue = newCondensingFunctionValue
-      doMinkowski()
-    }
+        function selectImage(image) {
+            console.log(`Clicked image ${image.id}`)
+            const imagePath = 'images/' + image.id + '.png';
+            if (imageChoice == 0) {
+                image1.src = imagePath
+                imageChoice = 1
+            } else {
+                image2.src = imagePath
+                imageChoice = 0
+            }
+            setTimeout(() => {
+                doMinkowski();
+            }, 10); // Without timeout the minkowski sum takes an extr refresh to appear!
+        }
 
-  </script>
+        function changeRangeFn(newRangeFunctionValue) {
+            console.log("Range Function value changed to " + newRangeFunctionValue)
+            rangeFunctionValue = newRangeFunctionValue
+            doMinkowski()
+        }
+
+        function changeCondensingFn(newCondensingFunctionValue) {
+            console.log("Condensing Function value changed to " + newCondensingFunctionValue)
+            condensingFunctionValue = newCondensingFunctionValue
+            doMinkowski()
+        }
+    </script>
 </body>
 
 </html>
