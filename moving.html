@@ -2,35 +2,53 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-  <style>
-    body { background-color: linen }
-    h1 { color: maroon; margin-bottom: 0px }
-    h2 { color: maroon; margin-bottom: 0px }
-    h3 { color: maroon; margin-bottom: 0px }
-    p  { margin-top: 0px; margin-bottom: 0px }
-  </style>
+    <style>
+        body {
+            background-color: linen
+        }
+        
+        h1 {
+            color: maroon;
+            margin-bottom: 0px
+        }
+        
+        h2 {
+            color: maroon;
+            margin-bottom: 0px
+        }
+        
+        h3 {
+            color: maroon;
+            margin-bottom: 0px
+        }
+        
+        p {
+            margin-top: 0px;
+            margin-bottom: 0px
+        }
+    </style>
 
-  <title>Moving Minkowski Sum</title>
+    <title>Moving Minkowski Sum</title>
 </head>
 
 <body>
-  <div class="test">
-    <form action=".\index.html">
-      <input type="submit" value="Home" />
-    </form>
-    <h1>Moving Minkowski Sum</h1>
+    <div class="test">
+        <form action=".\index.html">
+            <input type="submit" value="Home" />
+        </form>
+        <h1>Moving Minkowski Sum</h1>
 
-    <table>
-      <tr>
-        <td>
+        <table>
+            <tr>
+                <td>
 
-          <div id="fixed">
-            <svg width="100" height="100">
+                    <div id="fixed">
+                        <svg width="100" height="100">
               <path id ="square" fill= "#000000FF" d="M0 0 H100 V100 H0 Z"/>
               <g id="plus">
                 <!-- PLUS: -->
@@ -49,13 +67,13 @@
                 <circle fill= "#FFFFFFFF" cx="90" cy="50" r="2"/>
               </g>
             </svg>
-          </div>
+                    </div>
 
-        </td>
-        <td><img src='images/MinkowskiSum.png'></td>
-        <td>
-          <div id="moving">
-            <svg width="100" height="100">
+                </td>
+                <td><img src='images/MinkowskiSum.png'></td>
+                <td>
+                    <div id="moving">
+                        <svg width="100" height="100">
               <path id ="square" fill= "#000000FF" d="M0 0 H100 V100 H0 Z"/>
               <g id="plus" class="plusrotate">
                 <!-- PLUS: -->
@@ -72,193 +90,214 @@
                 <circle fill= "#FFFFFFFF" cx="90" cy="50" r="2"/>
               </g>
             </svg>
-          </div>
-        </td>
-        <td><img src='images/EqualsSymbol.png'></td>
-        <td><div id="minkySum"></div></td>
+                    </div>
+                </td>
+                <td><img src='images/EqualsSymbol.png'></td>
+                <td>
+                    <div id="minkySum"></div>
+                </td>
 
-      </tr>
-    </table>
+            </tr>
+        </table>
 
-    <!-- Get external scripts -------------------------------->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.min.js" integrity="sha512-cdV6j5t5o24hkSciVrb8Ki6FveC2SgwGfLE31+ZQRHAeSRxYhAQskLkq3dLm8ZcWe1N3vBOEYmmbhzf7NTtFFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="dist/html2canvas.js"></script>
-    <script src="dist/gpu-browser.min.js"></script>
+        <!-- Get external scripts -------------------------------->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js" integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="dist/html2canvas.js"></script>
+        <script src="dist/gpu-browser.min.js"></script>
 
-    <!-- Script ---------------------------------------------->
-    <script>
-      const gpu = new GPU({ mode: 'gpu' });
-      var imageSize = 100
+        <!-- Script ---------------------------------------------->
+        <script>
+            const gpu = new GPU({
+                mode: 'gpu'
+            });
+            var imageSize = 100
 
-      //========================================================================
-      // This routine will be run for each pixel of the output with:
-      //   this.thread.x as the x coordinate of the output
-      //   this.thread.y as the y coordinate of the output
-      const kernel = gpu.createKernel(function(imagea, imageb, rangeFunction, condensingFunction) {
-        const imageawidth  = 100
-        const imagebwidth  = 100
-        const imageaheight = 100
-        const imagebheight = 100
-        const imageoutwidth   = imageawidth  + imagebwidth  - 1
-        const imageoutheight  = imageaheight + imagebheight - 1
+            //========================================================================
+            // This routine will be run for each pixel of the output with:
+            //   this.thread.x as the x coordinate of the output
+            //   this.thread.y as the y coordinate of the output
+            const kernel = gpu.createKernel(function(imagea, imageb, rangeFunction, condensingFunction) {
+                    const imageawidth = 100
+                    const imagebwidth = 100
+                    const imageaheight = 100
+                    const imagebheight = 100
+                    const imageoutwidth = imageawidth + imagebwidth - 1
+                    const imageoutheight = imageaheight + imagebheight - 1
 
-        const axmin = Math.max(0, this.thread.x - imagebwidth + 1)
-        const axmax = Math.min(this.thread.x, imageawidth - 1)
-        const aymin = Math.max(0, this.thread.y - imagebheight + 1)
-        const aymax = Math.min(this.thread.y, imageaheight - 1)
+                    const axmin = Math.max(0, this.thread.x - imagebwidth + 1)
+                    const axmax = Math.min(this.thread.x, imageawidth - 1)
+                    const aymin = Math.max(0, this.thread.y - imagebheight + 1)
+                    const aymax = Math.min(this.thread.y, imageaheight - 1)
 
-        var maxr = 0; var maxg = 0; var maxb = 0; var maxa = 0; var loopCount = 0
-        for (let ay = aymin; ay <= aymax; ay++) {
-          for (let ax = axmin; ax <= axmax; ax++) {
-            const pixela = imagea[ay][ax]
-            const pixelb = imageb[this.thread.y-ay][this.thread.x-ax]
+                    var maxr = 0;
+                    var maxg = 0;
+                    var maxb = 0;
+                    var maxa = 0;
+                    var loopCount = 0
+                    for (let ay = aymin; ay <= aymax; ay++) {
+                        for (let ax = axmin; ax <= axmax; ax++) {
+                            const pixela = imagea[ay][ax]
+                            const pixelb = imageb[this.thread.y - ay][this.thread.x - ax]
 
-            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // The following may not be succinct but it happens O(n^4) times so trying to keep efficient!
-            if (condensingFunction == 1) { // Maximum
-              if (rangeFunction == 1) {
-                // For each channel, we take the minimum of the two pixel values and then look for the maximum of all of those:
-                maxr = Math.max(maxr, Math.min(pixela[0], pixelb[0]))
-                maxg = Math.max(maxg, Math.min(pixela[1], pixelb[1]))
-                maxb = Math.max(maxb, Math.min(pixela[2], pixelb[2]))
-                maxa = Math.max(maxa, Math.min(pixela[3], pixelb[3]))
-              }
-              if (rangeFunction == 2) {
-                // For each channel take the average of the two pixel values and then look for the maximum of all of those:
-                maxr = Math.max(maxr, (pixela[0] + pixelb[0]) / 2)
-                maxg = Math.max(maxg, (pixela[1] + pixelb[1]) / 2)
-                maxb = Math.max(maxb, (pixela[2] + pixelb[2]) / 2)
-                maxa = Math.max(maxa, (pixela[3] + pixelb[3]) / 2)
-              }
-              if (rangeFunction == 3) {
-                maxr = Math.max(maxr, pixela[0] * pixelb[0])
-                maxg = Math.max(maxg, pixela[1] * pixelb[1])
-                maxb = Math.max(maxb, pixela[2] * pixelb[2])
-                maxa = Math.max(maxa, pixela[3] * pixelb[3])
-              }
+                            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                            // The following may not be succinct but it happens O(n^4) times so trying to keep efficient!
+                            if (condensingFunction == 1) { // Maximum
+                                if (rangeFunction == 1) {
+                                    // For each channel, we take the minimum of the two pixel values and then look for the maximum of all of those:
+                                    maxr = Math.max(maxr, Math.min(pixela[0], pixelb[0]))
+                                    maxg = Math.max(maxg, Math.min(pixela[1], pixelb[1]))
+                                    maxb = Math.max(maxb, Math.min(pixela[2], pixelb[2]))
+                                    maxa = Math.max(maxa, Math.min(pixela[3], pixelb[3]))
+                                }
+                                if (rangeFunction == 2) {
+                                    // For each channel take the average of the two pixel values and then look for the maximum of all of those:
+                                    maxr = Math.max(maxr, (pixela[0] + pixelb[0]) / 2)
+                                    maxg = Math.max(maxg, (pixela[1] + pixelb[1]) / 2)
+                                    maxb = Math.max(maxb, (pixela[2] + pixelb[2]) / 2)
+                                    maxa = Math.max(maxa, (pixela[3] + pixelb[3]) / 2)
+                                }
+                                if (rangeFunction == 3) {
+                                    maxr = Math.max(maxr, pixela[0] * pixelb[0])
+                                    maxg = Math.max(maxg, pixela[1] * pixelb[1])
+                                    maxb = Math.max(maxb, pixela[2] * pixelb[2])
+                                    maxa = Math.max(maxa, pixela[3] * pixelb[3])
+                                }
+                            }
+                            if (condensingFunction == 2) { // Average which we achieve by adding and then divide later
+                                if (rangeFunction == 1) {
+                                    maxr = maxr + Math.min(pixela[0], pixelb[0])
+                                    maxg = maxg + Math.min(pixela[1], pixelb[1])
+                                    maxb = maxb + Math.min(pixela[2], pixelb[2])
+                                    maxa = maxa + Math.min(pixela[3], pixelb[3])
+                                }
+                                if (rangeFunction == 2) {
+                                    maxr = maxr + (pixela[0] + pixelb[0]) / 2
+                                    maxg = maxg + (pixela[1] + pixelb[1]) / 2
+                                    maxb = maxb + (pixela[2] + pixelb[2]) / 2
+                                    maxa = maxa + (pixela[3] + pixelb[3]) / 2
+                                }
+                                if (rangeFunction == 3) {
+                                    maxr = maxr + pixela[0] * pixelb[0]
+                                    maxg = maxg + pixela[1] * pixelb[1]
+                                    maxb = maxb + pixela[2] * pixelb[2]
+                                    maxa = maxa + pixela[3] * pixelb[3]
+                                }
+                                if (maxr + maxg + maxb + maxa > 0) { // Only count if there's a non-zero amount
+                                    loopCount = loopCount + 1
+                                }
+                            }
+                            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                        }
+                    }
+                    if (condensingFunction == 2) { // Average
+                        if (loopCount > 0) {
+                            maxr = maxr / loopCount
+                            maxg = maxg / loopCount
+                            maxb = maxb / loopCount
+                            maxa = maxa / loopCount
+                        }
+                    }
+                    this.color(maxr, maxg, maxb, maxa)
+                })
+                .setGraphical(true)
+                .setOutput([200, 200])
+                //========================================================================
+
+            function sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
             }
-            if (condensingFunction == 2) { // Average which we achieve by adding and then divide later
-              if (rangeFunction == 1) {
-                maxr = maxr + Math.min(pixela[0], pixelb[0])
-                maxg = maxg + Math.min(pixela[1], pixelb[1])
-                maxb = maxb + Math.min(pixela[2], pixelb[2])
-                maxa = maxa + Math.min(pixela[3], pixelb[3])
-              }
-              if (rangeFunction == 2) {
-                maxr = maxr + (pixela[0] + pixelb[0]) / 2
-                maxg = maxg + (pixela[1] + pixelb[1]) / 2
-                maxb = maxb + (pixela[2] + pixelb[2]) / 2
-                maxa = maxa + (pixela[3] + pixelb[3]) / 2
-              }
-              if (rangeFunction == 3) {
-                maxr = maxr + pixela[0] * pixelb[0]
-                maxg = maxg + pixela[1] * pixelb[1]
-                maxb = maxb + pixela[2] * pixelb[2]
-                maxa = maxa + pixela[3] * pixelb[3]
-              }
-              if (maxr+maxg+maxb+maxa > 0) {  // Only count if there's a non-zero amount
-                loopCount = loopCount + 1
-              }
+
+            function onload2promise(obj) {
+                return new Promise((resolve, reject) => {
+                    obj.onload = () => resolve(obj);
+                    obj.onerror = reject;
+                });
             }
-            //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-          }
-        }
-        if (condensingFunction == 2) { // Average
-          if (loopCount > 0) {
-            maxr = maxr / loopCount
-            maxg = maxg / loopCount
-            maxb = maxb / loopCount
-            maxa = maxa / loopCount
-          }
-        }
-        this.color(maxr, maxg, maxb, maxa)
-      })
-      .setGraphical(true)
-      .setOutput([200, 200])
-      //========================================================================
 
-      function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-      }
+            function canvasImage(canvas) {
+                const image = document.createElement('img')
+                image.src = canvas.toDataURL();
+                return image
+            }
 
-      function onload2promise(obj){
-        return new Promise((resolve, reject) => {
-          obj.onload = () => resolve(obj);
-          obj.onerror = reject;
-        });
-      }
+            async function canvasImageWait(canvas) {
+                let image = new Image();
+                let imagePromise = onload2promise(image);
+                image.src = canvas.toDataURL();
+                await imagePromise;
+                return image
+            }
 
-      function canvasImage(canvas) {
-        const image = document.createElement('img')
-        image.src = canvas.toDataURL();
-        return image
-      }
+            function removeAllChildNodes(parent) {
+                while (parent.firstChild) {
+                    parent.removeChild(parent.firstChild);
+                }
+            }
 
-      async function canvasImageWait(canvas){
-        let image = new Image();
-        let imagePromise = onload2promise(image);
-        image.src = canvas.toDataURL();
-        await imagePromise;
-        return image
-      }
+            function replaceChild(parent, child) {
+                removeAllChildNodes(parent);
+                parent.appendChild(child);
+            }
 
-      function removeAllChildNodes(parent) {
-        while (parent.firstChild) {
-          parent.removeChild(parent.firstChild);
-        }
-      }
+            console.log("Started");
 
-      function replaceChild(parent, child) {
-        removeAllChildNodes(parent);
-        parent.appendChild(child);
-      }
+            // Keep references
+            const elementRotor = document.getElementById("moving")
+            const elementRotorFixed = document.getElementById("fixed")
+            const elementMinkySum = document.getElementById("minkySum")
 
-      console.log("Started");
+            // Set up the animation:
+            let tween = gsap.to(".plusrotate", {
+                duration: 6.0,
+                rotate: 180,
+                transformOrigin: '50% 50%',
+                repeat: 1,
+                ease: Power0.easeNone
+            });
+            tween.pause();
 
-      // Keep references
-      const elementRotor = document.getElementById("moving")
-      const elementRotorFixed = document.getElementById("fixed")
-      const elementMinkySum = document.getElementById("minkySum")
+            const framesPerSecond = 30
+            const totalDuration = tween.totalDuration()
+            const frameInterval = 1 / framesPerSecond
+            console.log("totalDuration=" + totalDuration)
 
-      // Set up the animation:
-      let tween = gsap.to(".plusrotate", {duration: 6.0, rotate: 180, transformOrigin: '50% 50%', repeat: 1, ease:
-Power0.easeNone} );
-      tween.pause();
+            async function snaps() {
+                //Fixed
+                const canvas = await html2canvas(elementRotorFixed, {
+                    scale: "1.0",
+                    width: "100",
+                    height: "100"
+                })
+                const fixedImage = await canvasImageWait(canvas)
+                    //await sleep(50);
+                console.log("Snapped " + "fixed" + "!");
 
-      const framesPerSecond = 30
-      const totalDuration = tween.totalDuration()
-      const frameInterval = 1/framesPerSecond
-      console.log("totalDuration="+totalDuration)
+                elementMinkySum.appendChild(kernel.canvas);
 
-      async function snaps() {
-        //Fixed
-        const canvas = await html2canvas(elementRotorFixed, {scale: "1.0", width: "100", height: "100"})
-        const fixedImage = await canvasImageWait(canvas)
-        //await sleep(50);
-        console.log("Snapped " + "fixed" + "!");
+                //Moving
+                for (let loop = 1; loop <= 10; loop++) {
+                    for (let progress = 0; progress <= totalDuration; progress += frameInterval) {
+                        // Seek position
+                        tween.seek(progress);
 
-        elementMinkySum.appendChild(kernel.canvas);
+                        // Turn input into image
+                        const canvas = await html2canvas(elementRotor, {
+                            scale: "1.0",
+                            width: "100",
+                            height: "100"
+                        })
+                        const movingImage = await canvasImageWait(canvas)
 
-        //Moving
-        for (let loop = 1; loop <= 10; loop++) {
-          for (let progress = 0; progress <= totalDuration; progress += frameInterval ) {
-            // Seek position
-            tween.seek(progress);
+                        // Calculate minkowski sum
+                        kernel(fixedImage, movingImage, 1, 1);
+                    }
+                }
+            }
 
-            // Turn input into image
-            const canvas = await html2canvas(elementRotor, {scale: "1.0", width: "100", height: "100"})
-            const movingImage = await canvasImageWait(canvas)
+            snaps();
 
-            // Calculate minkowski sum
-            kernel(fixedImage, movingImage, 1, 1);
-          }
-        }
-      }
-
-      snaps();
-
-      console.log("Finished");
-    </script>
+            console.log("Finished");
+        </script>
 
 
 </body>
