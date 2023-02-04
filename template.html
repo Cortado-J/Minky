@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script async src="https://kit.fontawesome.com/6cc05e1e8e.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./style.css">
+    <meta charset="UTF-8" />
+
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        .main {
+            width: 100%;
+            flex-direction: column;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0px 60px 0px;
+        }
+        
+        h1 {
+            margin: 10px 0px 30px 0px;
+            font-family: cursive;
+            color: rgb(0, 6, 90);
+            font-size: 50px;
+        }
+        
+        .gallery {
+            display: grid;
+            width: 90%;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 10px;
+        }
+        
+        .gallery__item {
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+        
+        .gallery__item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.3s ease-in-out;
+        }
+        
+        .gallery__item img:hover {
+            transform: scale(1.1);
+        }
+        
+        .modal {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.733);
+            margin-top: -1px;
+            animation: zoom 0.3s ease-in-out;
+        }
+        
+        .closeBtn {
+            color: rgba(255, 255, 255, 0.87);
+            font-size: 50px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 20px;
+            cursor: pointer;
+            transition: 0.2s ease-in-out;
+        }
+        
+        .closeBtn:hover {
+            color: rgb(160, 160, 160);
+        }
+        
+        .modal img {
+            width: 10%;
+            object-fit: cover;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="main">
+        <h1>Gallery</h1>
+        <div class="gallery">
+            <div class="gallery__item">
+                <img src="./images/Cool.png" onclick="imgModal()" />
+            </div>
+        </div>
+    </div>
+</body>
+
+<!-- Script ---------------------------------------------->
+<script>
+    //creating the modal
+    let imgModal = () => {
+        const modal = document.createElement("div");
+        modal.setAttribute("class", "modal");
+        document.querySelector(".main").append(modal);
+
+        const newImage = document.createElement("img");
+        newImage.setAttribute("src", "/images/Dave.png");
+
+        const closeBtn = document.createElement("i");
+        closeBtn.setAttribute("class", "fas fa-times closeBtn");
+        closeBtn.onclick = () => {
+            modal.remove();
+        };
+
+        modal.append(newImage, closeBtn);
+    };
+</script>
+
+</html>

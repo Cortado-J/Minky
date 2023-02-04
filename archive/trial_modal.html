@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script async src="https://kit.fontawesome.com/6cc05e1e8e.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./style.css">
+    <meta charset="UTF-8" />
+
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        .main {
+            width: 100%;
+            flex-direction: column;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0px 60px 0px;
+        }
+        
+        h1 {
+            margin: 10px 0px 30px 0px;
+            font-family: cursive;
+            color: rgb(0, 6, 90);
+            font-size: 50px;
+        }
+        
+        .gallery {
+            display: grid;
+            width: 90%;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 10px;
+        }
+        
+        .gallery__item {
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+        
+        .gallery__item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.3s ease-in-out;
+        }
+        
+        .gallery__item img:hover {
+            transform: scale(1.1);
+        }
+        
+        @media (max-width: 300px) {
+            .gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 200px) {
+            .gallery {
+                grid-template-columns: repeat(1, 1fr);
+            }
+        }
+        /*Image modal*/
+        
+        .modal {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.733);
+            margin-top: -1px;
+            animation: zoom 0.3s ease-in-out;
+        }
+        
+        @keyframes zoom {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+        
+        .closeBtn {
+            color: rgba(255, 255, 255, 0.87);
+            font-size: 25px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 20px;
+            cursor: pointer;
+            transition: 0.2s ease-in-out;
+        }
+        
+        .closeBtn:hover {
+            color: rgb(255, 255, 255);
+        }
+        
+        .modal img {
+            width: 50%;
+            object-fit: cover;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="main">
+        <h1>Gallery</h1>
+        <div class="gallery">
+            <div class="gallery__item">
+                <img src="./images/Dave.png" />
+            </div>
+            <div class="gallery__item">
+                <img src="./images/Dave.png" />
+            </div>
+            <div class="gallery__item">
+                <img src="./images/Dave.png" />
+            </div>
+            <div class="gallery__item">
+                <img src="./images/Dave.png" />
+            </div>
+            <div class="gallery__item">
+                <img src="./images/Dave.png" />
+            </div>
+            <div class="gallery__item">
+                <img src="./images/Dave.png" />
+            </div>
+            <div class="gallery__item">
+                <img src="./images/Dave.png" />
+            </div>
+            <div class="gallery__item">
+                <img src="./images/Dave.png" />
+            </div>
+        </div>
+    </div>
+</body>
+
+<!-- Script ---------------------------------------------->
+<script>
+    const images = document.querySelectorAll(".gallery__item img");
+    let imgIndex
+    let imgSrc;
+    // get images src onclick
+    images.forEach((img, i) => {
+        img.addEventListener("click", (e) => {
+            imgSrc = e.target.src;
+            //run modal function
+            imgModal(imgSrc);
+            //index of the next image
+            imgIndex = i;
+        });
+    });
+    //creating the modal
+    let imgModal = (src) => {
+        const modal = document.createElement("div");
+        modal.setAttribute("class", "modal");
+        //add modal to the parent element 
+        document.querySelector(".main").append(modal);
+        //adding image to modal
+        const newImage = document.createElement("img");
+        newImage.setAttribute("src", src);
+        //creating the close button
+        const closeBtn = document.createElement("i");
+        closeBtn.setAttribute("class", "fas fa-times closeBtn");
+        //close function
+        closeBtn.onclick = () => {
+            modal.remove();
+        };
+        //next and previous buttons
+        const nextBtn = document.createElement("i");
+        nextBtn.setAttribute("class", "fas fa-angle-right nextBtn");
+        // change the src of current image to the src of next image
+        nextBtn.onclick = () => {
+            newImage.setAttribute("src", nextImg())
+        };
+        const prevBtn = document.createElement("i");
+        prevBtn.setAttribute("class", "fas fa-angle-left prevBtn");
+        // change the src of current image to the src of pevious image
+        prevBtn.onclick = () => {
+            newImage.setAttribute("src", prevImg())
+        }
+        modal.append(newImage, closeBtn, nextBtn, prevBtn);
+    };
+
+    //next image function
+    let nextImg = () => {
+        imgIndex++;
+        //check if it is the the last image
+        if (imgIndex >= images.length) {
+            imgIndex = 0
+        }
+        //return src of the new image
+        return images[imgIndex].src;
+    };
+    //previous image function
+    let prevImg = () => {
+        imgIndex--;
+        console.log(imgIndex);
+        //check if it is the first image
+        if (imgIndex < 0) {
+            imgIndex = images.length - 1
+        }
+        //return src of previous image
+        return images[imgIndex].src
+    }
+</script>
+
+</html>

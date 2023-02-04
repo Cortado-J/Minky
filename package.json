@@ -1,0 +1,21 @@
+{
+    "name": "minky",
+    "version": "1.0.0",
+    "description": "Exploration of Adding images using Minkowski Sum",
+    "main": "server.js",
+    "scripts": {},
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Cortado-J/Minky.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Cortado-J/Minky/issues"
+    },
+    "homepage": "https://github.com/Cortado-J/Minky#readme",
+    "dependencies": {
+        "vue-multiselect": "^3.0.0-alpha.2"
+    },
+    "devDependencies": {}
+}

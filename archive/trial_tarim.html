@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <style>
+        body {
+            background-color: linen
+        }
+        
+        h1 {
+            color: maroon;
+            margin-bottom: 0px
+        }
+        
+        h2 {
+            color: maroon;
+            margin-bottom: 0px
+        }
+        
+        h3 {
+            color: maroon;
+            margin-bottom: 0px
+        }
+        
+        p {
+            margin-top: 0px;
+            margin-bottom: 0px
+        }
+    </style>
+
+    <title>Moving Minkowski Sum</title>
+</head>
+
+<body>
+    <div class="test">
+        <form action=".\index.html">
+            <input type="submit" value="Home" />
+        </form>
+        <h1>Images testing</h1>
+
+        <!-- Get external scripts -------------------------------->
+        <script src="dist/html2canvas.js"></script>
+
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js" integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="dist/html2canvas.js"></script>
+        <script src="dist/gpu-browser.min.js"></script> -->
+
+        <!-- Script ---------------------------------------------->
+        <script>
+            var imagePaths = [
+                "images/Cool.png",
+                "images/Dave.png",
+            ];
+
+            var imageObjects = [];
+            var imagesLoaded = 0;
+
+            imagePaths.forEach(
+                function(pathname, index) {
+                    let image = new Image();
+                    image.src = pathname;
+
+                    image.onload = function() {
+                        let canvas = document.createElement('canvas');
+                        let context = canvas.getContext('2d');
+                        context.drawImage(image, 0, 0);
+
+                        imageObects[index] = {
+                            pathname,
+                            image,
+                            canvas,
+                            context
+                        };
+
+                        if (++imagesLoaded == imagePaths.length) {
+                            everythingIsLoaded();
+                        }
+                    }
+                }
+            );
+        </script>
+
+</body>
+
+</html>
